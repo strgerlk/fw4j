@@ -12,6 +12,7 @@
     <packaging>jar</packaging>
     
     <dependencies>
+        <!-- modules -->
         <dependency>
             <groupId>com.vbrug.fw4j</groupId>
             <artifactId>fw4j-common</artifactId>

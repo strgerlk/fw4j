@@ -1,4 +1,4 @@
-package com.vbrug.fw4j.common.utils;
+package com.vbrug.fw4j.common.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
