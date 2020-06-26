@@ -18,6 +18,7 @@
         <mybatis.spring.version>2.0.1</mybatis.spring.version>
         <maven-compile-plugin.version>3.3</maven-compile-plugin.version>
         <java.version>1.8</java.version>
+        <junit.version>4.12</junit.version>
         
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -64,11 +65,19 @@
                <version>${mybatis.version}</version>
            </dependency>
            
+           <!-- test -->
+           <dependency>
+               <groupId>junit</groupId>
+               <artifactId>junit</artifactId>
+               <version>${junit.version}</version>
+               <scope>test</scope>
+           </dependency>
+           
            <!-- log -->
            <dependency>
-<groupId></groupId>
-<artifactId>logba</artifactId>
-</dependency>
+               <groupId></groupId>
+               <artifactId>logba</artifactId>
+           </dependency>
        </dependencies>
     </dependencyManagement>
 
@@ -90,6 +99,5 @@
             </plugins>
         </pluginManagement>
     </build>
-    
     
 </project>
