@@ -6,6 +6,12 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+/**
+ * shell调用工具类
+ *
+ * @author vbrug
+ * @since 1.0.0
+ */
 public class ShellUtil {
 
 
