@@ -8,4 +8,9 @@ package com.vbrug.fw4j.common.util;
  * @since 1.0.0
  */
 public class ArrayUtils {
+    public static void main(String[] args) {
+        System.out.println(111);
+    }
+
+
 }

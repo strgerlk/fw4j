@@ -1,7 +1,5 @@
 package com.vbrug.fw4j.common.util;
 
-import com.sun.istack.internal.Nullable;
-
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -40,8 +38,7 @@ public abstract class Assert {
             throw new IllegalArgumentException(message);
     }
 
-    @Nullable
-    private static String nullSafeGet(@Nullable Supplier<String> messageSupplier){
+    private static String nullSafeGet(Supplier<String> messageSupplier){
         return Optional.ofNullable(messageSupplier).map(Supplier::get).orElse(null);
     }
 }
