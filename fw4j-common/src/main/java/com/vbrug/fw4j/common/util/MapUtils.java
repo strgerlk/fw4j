@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 /**
  * Map工具类
- * @author liukong
+ * @author vbrug
  */
 public abstract class MapUtils {
 

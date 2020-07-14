@@ -22,14 +22,14 @@ public abstract class ObjectUtils {
     /**
      * 判断对象非空，集合校验size
      */
-    public static boolean isNotNull(Object... objs) {
-        return ObjectUtils.isNotEmpty(objs);
+    public static boolean notNull(Object... objs) {
+        return ObjectUtils.notEmpty(objs);
     }
 
     /**
      * 对象非空判断
      */
-    public static boolean isNotEmpty(Object obj){
+    public static boolean notEmpty(Object obj){
         return ! ObjectUtils.isEmpty(obj);
     }
 
