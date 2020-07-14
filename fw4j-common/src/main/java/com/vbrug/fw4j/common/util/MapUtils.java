@@ -6,7 +6,7 @@ import java.util.HashMap;
  * Map工具类
  * @author liukong
  */
-public class MapUtils {
+public abstract class MapUtils {
 
     /**
      * 简化值Map集合创建、赋值操作
