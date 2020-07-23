@@ -37,4 +37,42 @@ public class StringUtils {
         return (str != null && str.length() > 0);
     }
 
+
+    public static String rpad(String src, char fillChar, int length){
+        return fillChar(src, fillChar, length, "right");
+    }
+
+    public static String lpad(String src, char fillChar, int length){
+        return fillChar(src, fillChar, length, "left");
+    }
+
+    public static String alignFill(String src, char fillChar, int length){
+        if (src.length() >= length ){
+            return src;
+        }
+        boolean lastIsLeft = false;
+        while (src.length() < length){
+            if (lastIsLeft) {
+                src += fillChar;
+                lastIsLeft = false;
+            } else {
+                src = fillChar + src;
+                lastIsLeft = true;
+            }
+        }
+        return src;
+    }
+
+    private static String fillChar(String src, char fillChar, int length, String fillType){
+        if (src.length() >= length ){
+            return src;
+        }
+        while (src.length() < length){
+            if ("left".equals(fillType))
+                src = fillChar + src;
+            else
+                src += fillChar;
+        }
+        return src;
+    }
 }

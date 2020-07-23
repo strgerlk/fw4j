@@ -15,15 +15,15 @@ public abstract class ObjectUtils {
     /**
      * 判断对象为空，集合校验size
      */
-    public static boolean isNull(Object... objs){
-        return ObjectUtils.isEmpty(objs);
+    public static boolean isNull(Object... objects){
+        return ObjectUtils.isEmpty(objects);
     }
 
     /**
      * 判断对象非空，集合校验size
      */
-    public static boolean notNull(Object... objs) {
-        return ObjectUtils.notEmpty(objs);
+    public static boolean notNull(Object... objects) {
+        return ObjectUtils.notEmpty(objects);
     }
 
     /**
