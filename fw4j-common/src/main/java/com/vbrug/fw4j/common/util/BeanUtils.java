@@ -1,39 +1,50 @@
 package com.vbrug.fw4j.common.util;
 
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.util.Objects;
+import java.lang.reflect.Modifier;
 
 /**
- * Bean工具
- *
- * @author liukong
- * @since 1.0
+ * @author vbrug
+ * @since 1.0.0
  */
-public abstract class BeanUtils {
+public class BeanUtils {
 
     /**
-     * 克隆bean
+     * 将源对象属性复制到目标对象
      *
-     * @param t
-     * @param <T>
-     * @return
-     * @throws Exception
+     * @param source 源对象
+     * @param target 目标对象
      */
-    public static <T> T clone(T t) throws Exception {
-        T clone = (T) t.getClass().newInstance();
-        PropertyDescriptor[] descriptors = Introspector.getBeanInfo(t.getClass())
-                .getPropertyDescriptors();
-        for (PropertyDescriptor descriptor : descriptors) {
-            Method readMethod = descriptor.getReadMethod();
-            Method writeMethod = descriptor.getWriteMethod();
-            if (Objects.isNull(readMethod) || Objects.isNull(writeMethod))
+    public static void copyProperties(Object source, Object target) {
+        Assert.notNull(source, "Source must not be null");
+        Assert.notNull(target, "Target must not be null");
+
+        PropertyDescriptor[] targetPds = ClassUtils.getPropertyDescriptor(target);
+
+        for (PropertyDescriptor targetPd : targetPds) {
+            if ("class".equals(targetPd.getName()))
                 continue;
-            Object value = readMethod.invoke(t);
-            if (!Objects.isNull(value))
-                writeMethod.invoke(clone, value);
+            Method writeMethod = targetPd.getWriteMethod();
+            PropertyDescriptor sourcePd = ClassUtils.getPropertyDescriptor(source, targetPd.getName());
+            if (sourcePd != null) {
+                Method readMethod = sourcePd.getReadMethod();
+                if (readMethod != null) {
+                    try {
+                        if (!Modifier.isPublic(readMethod.getDeclaringClass().getModifiers())) {
+                            readMethod.setAccessible(true);
+                        }
+                        Object value = readMethod.invoke(source);
+                        if (!Modifier.isPublic(writeMethod.getDeclaringClass().getModifiers())) {
+                            writeMethod.setAccessible(true);
+                        }
+                        writeMethod.invoke(target, value);
+                    } catch (Throwable ex) {
+                        throw new RuntimeException("Could not copy property '" + targetPd.getName() + "' from source to target", ex);
+                    }
+                }
+            }
         }
-        return clone;
     }
+
 }

@@ -18,6 +18,7 @@
         <mybatis.spring.version>2.0.1</mybatis.spring.version>
         <java.version>1.8</java.version>
         <junit.jupiter.version>5.6.2</junit.jupiter.version>
+        <slf4j.version>1.7.26</slf4j.version>
         <maven-compile-plugin.version>3.7.0</maven-compile-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.0.0-M3</maven-failsafe-plugin.version>
@@ -66,6 +67,13 @@
                <artifactId>mybatis</artifactId>
                <version>${mybatis.version}</version>
            </dependency>
+    
+           <!-- slf4j -->
+           <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
        </dependencies>
     </dependencyManagement>
     

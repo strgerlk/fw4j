@@ -1,16 +1,12 @@
 package com.vbrug.fw4j.common.util;
 
-
 /**
- * 数组工具类
- *
  * @author vbrug
  * @since 1.0.0
  */
-public class ArrayUtils {
+public class IDUtilTest {
+
     public static void main(String[] args) {
-        System.out.println(111);
+        System.out.println(IdGenerator.nextMillis());
     }
-
-
 }
