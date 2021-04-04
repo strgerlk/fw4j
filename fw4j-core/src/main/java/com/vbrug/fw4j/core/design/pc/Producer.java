@@ -5,6 +5,7 @@ import com.vbrug.fw4j.core.thread.ThreadState;
 
 import java.util.Deque;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 生产者
@@ -22,6 +23,7 @@ public class Producer<T> implements Runnable {
     private final SignalLock exitLock;
     protected volatile ThreadState state;
     private Exception exception;
+    private volatile Boolean isWaitConsume = false;
 
     public Producer(ProducerHandler<T> handler, Deque<T> deque, SignalLock lock) {
         this.handler = handler;
@@ -30,9 +32,10 @@ public class Producer<T> implements Runnable {
         this.exitLock = new SignalLock(true);
     }
 
-    public Producer(ProducerHandler<T> handler, Deque<T> deque, SignalLock lock, boolean noProduceStop) {
+    public Producer(ProducerHandler<T> handler, Deque<T> deque, SignalLock lock, boolean noProduceStop, boolean isWaitConsume) {
         this(handler, deque, lock);
         this.noProduceStop = noProduceStop;
+        this.isWaitConsume = isWaitConsume;
     }
 
     @Override
@@ -41,11 +44,15 @@ public class Producer<T> implements Runnable {
         while (this.isRunning) {
             T t = null;
             try {
+                while (isWaitConsume && deque.size() > 1)
+                    TimeUnit.MILLISECONDS.sleep(1500);
                 t = handler.produce();
             } catch (Exception e) {
+                handler.close();
                 this.isRunning = false;
                 this.state = ThreadState.EXCEPTION;
                 this.exception = e;
+                e.printStackTrace();
             }
             if (Objects.isNull(t)) {
                 if (noProduceStop)
@@ -53,14 +60,15 @@ public class Producer<T> implements Runnable {
                 continue;
             }
             lock.lock();
+            deque.add(t);
             try {
                 if (lock.hasWaiters())
                     lock.signal();
             } finally {
                 lock.unlock();
             }
-            deque.add(t);
         }
+        handler.close();
         this.state = ThreadState.STOPPING;
         this.exitLock.lock();
         try {
@@ -78,7 +86,7 @@ public class Producer<T> implements Runnable {
     }
 
     public boolean isStop() {
-        return this.state == ThreadState.STOP;
+        return this.state == ThreadState.STOP || this.state == ThreadState.EXCEPTION;
     }
 
     public void finish() {
@@ -101,7 +109,7 @@ public class Producer<T> implements Runnable {
         }
     }
 
-    public void start(){
+    public void start() {
         new Thread(this).start();
     }
 }

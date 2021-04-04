@@ -1,5 +1,8 @@
 package com.vbrug.fw4j.common.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,12 +14,13 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
 
-    public static boolean isEmpty(CharSequence sequence){
+    public static boolean isEmpty(CharSequence sequence) {
         return !hasText(sequence);
     }
 
     /**
      * 校验字符串是否有内容，且不可为空字符串
+     *
      * @param str 待校验字符串
      * @return Boolean 判断结果
      */
@@ -36,30 +40,12 @@ public class StringUtils {
 
     /**
      * 校验字符长度
+     *
      * @param str 待校验字符
      * @return Boolean 判断结果
      */
     public static boolean hasLength(CharSequence str) {
         return (str != null && str.length() > 0);
-    }
-
-
-
-    public static String alignFill(String src, char fillChar, int length){
-        if (src.length() >= length ){
-            return src;
-        }
-        boolean lastIsLeft = false;
-        while (src.length() < length){
-            if (lastIsLeft) {
-                src += fillChar;
-                lastIsLeft = false;
-            } else {
-                src = fillChar + src;
-                lastIsLeft = true;
-            }
-        }
-        return src;
     }
 
     /**
@@ -91,7 +77,6 @@ public class StringUtils {
     }
 
 
-
     /**
      * 驼峰转下划线(效率高于{@link #humpToLine(String)})
      *
@@ -109,45 +94,120 @@ public class StringUtils {
         return sb.toString();
     }
 
+    /**
+     * 删除字符串内Tab、换行
+     */
+    public static String removeTNR(String str) {
+        return str.replaceAll("[\\t\\n\\r]", " ");
+    }
+
+    /**
+     * 删除前后字符
+     *
+     * @param content
+     * @param trimStr
+     * @return
+     */
+    public static String trimStr(String content, String trimStr) {
+        if (content.startsWith(trimStr))
+            content = content.replace(trimStr, "");
+        if (content.endsWith(trimStr))
+            content = content.substring(0, content.length() - trimStr.length());
+        return content;
+    }
 
     /**
      * 字符串右补位
      *
-     * @param src 源字符串
+     * @param src      源字符串
      * @param fillChar 补位字符
-     * @param length 总长度
+     * @param length   总长度
      * @return 补位后的字符串
      */
-    public static String rpad(String src, char fillChar, int length){
+    public static String rpad(String src, char fillChar, int length) {
         return fillChar(src, fillChar, length, "right");
     }
 
     /**
      * 字符串左补位
      *
-     * @param src 源字符串
+     * @param src      源字符串
      * @param fillChar 补位字符
-     * @param length 总长度
+     * @param length   总长度
      * @return 补位后的字符串
      */
-    public static String lpad(String src, char fillChar, int length){
+    public static String lpad(String src, char fillChar, int length) {
         return fillChar(src, fillChar, length, "left");
+    }
+
+
+    /**
+     * 字符串提取
+     *
+     * @param content       待提取内容
+     * @param regexpPattern 匹配表达式
+     * @return 匹配的第一个字符串
+     */
+    public static String extract(String content, String regexpPattern) {
+        return Optional.ofNullable(extractAll(content, regexpPattern)).map(x -> x.get(0)).orElse(null);
+    }
+
+    /**
+     * 字符串提取
+     *
+     * @param content       待提取内容
+     * @param regexpPattern 匹配表达式
+     * @return 匹配到的字符串
+     */
+    public static List<String> extractAll(String content, String regexpPattern) {
+        List<String> resultList = new ArrayList<String>();
+        Pattern p = Pattern.compile(regexpPattern);
+        Matcher m = p.matcher(content);
+        while (m.find()) {
+            resultList.add(m.group());
+        }
+        return CollectionUtils.isEmpty(resultList) ? null : resultList;
+    }
+
+    /**
+     * 居中补充，左右填补相同字符，填充到相同长度
+     *
+     * @param src      源字符串
+     * @param fillChar 待填充字符
+     * @param length   长度
+     * @return 填补后的字符串
+     */
+    public static String alignFill(String src, char fillChar, int length) {
+        if (src.length() >= length) {
+            return src;
+        }
+        boolean lastIsLeft = false;
+        while (src.length() < length) {
+            if (lastIsLeft) {
+                src += fillChar;
+                lastIsLeft = false;
+            } else {
+                src = fillChar + src;
+                lastIsLeft = true;
+            }
+        }
+        return src;
     }
 
     /**
      * 字符串补位
      *
-     * @param src 源字符串
+     * @param src      源字符串
      * @param fillChar 补位字符
-     * @param length 总长度
+     * @param length   总长度
      * @param fillType 填补类型
      * @return 补位后的字符串
      */
-    private static String fillChar(String src, char fillChar, int length, String fillType){
-        if (src.length() >= length ){
+    private static String fillChar(String src, char fillChar, int length, String fillType) {
+        if (src.length() >= length) {
             return src;
         }
-        while (src.length() < length){
+        while (src.length() < length) {
             if ("left".equals(fillType))
                 src = fillChar + src;
             else

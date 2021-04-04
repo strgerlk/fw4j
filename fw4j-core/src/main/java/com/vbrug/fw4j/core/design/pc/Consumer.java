@@ -38,6 +38,8 @@ public class Consumer<T> implements Runnable {
                     try {
                         lock.await();
                     } catch (InterruptedException e) {
+                        handler.close();
+                        this.state = ThreadState.EXCEPTION;
                         throw new RuntimeException(e);
                     } finally {
                         lock.unlock();
@@ -54,12 +56,15 @@ public class Consumer<T> implements Runnable {
                         handler.consume(poll);
                     } catch (Exception e) {
                         this.isRunning = false;
+                        this.state = ThreadState.EXCEPTION;
                         e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                 }
             }
             this.state = ThreadState.LOCKING;
         }
+        handler.close();
 
         this.state = ThreadState.STOPPING;
         this.exitLock.lock();
@@ -78,7 +83,7 @@ public class Consumer<T> implements Runnable {
     }
 
     public boolean isStop() {
-        return this.state == ThreadState.STOP;
+        return this.state == ThreadState.STOP || this.state == ThreadState.EXCEPTION;
     }
 
     public void finish() {

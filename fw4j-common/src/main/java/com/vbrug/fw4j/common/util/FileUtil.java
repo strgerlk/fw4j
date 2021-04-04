@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author LK
+ * @author vbrug
  * @since 1.0
  */
 public class FileUtil {

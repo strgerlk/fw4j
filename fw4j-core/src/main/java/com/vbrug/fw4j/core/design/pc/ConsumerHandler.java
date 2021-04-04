@@ -10,4 +10,6 @@ public abstract class ConsumerHandler <T> {
 
     public abstract void consume(T t) throws Exception;
 
+    public void close(){}
+
 }

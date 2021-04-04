@@ -2,11 +2,11 @@ package com.vbrug.fw4j.common.util;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -17,9 +17,27 @@ import java.util.*;
  */
 public abstract class JacksonUtils {
 
+    /**
+     * 映射器
+     */
     private static final ObjectMapper mapper = new ObjectMapper();
 
 
+    static {
+        // 转换为格式化的json
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        // 如果json中有新增的字段并且是实体类类中不存在的，不报错
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        //修改日期格式
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    /**
+     * 将bean序列化为JSON字符串
+     *
+     * @param object 待序列化对象
+     * @return 返回序列化后的字符串
+     */
     public static String bean2Json(Object object) {
         StringWriter sw = new StringWriter();
         try {
@@ -42,6 +60,16 @@ public abstract class JacksonUtils {
 
     public static Map json2Map(String jsonStr) {
         return JacksonUtils.json2Bean(jsonStr, Map.class);
+    }
+
+    public static List<Map> jsonToListMap(String jsonStr) throws IOException {
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, Map.class);
+        return mapper.readValue(jsonStr, javaType);
+    }
+
+    public static <T> List<T> jsonToList(String jsonStr, Class<T> clazz) throws IOException {
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, clazz);
+        return mapper.readValue(jsonStr, javaType);
     }
 
     /**

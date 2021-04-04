@@ -115,7 +115,7 @@ public abstract class CollectionUtils {
      * @param element     the element to look for
      * @return {@code true} if found, {@code false} otherwise
      */
-    public static boolean contains( Enumeration<?> enumeration, Object element) {
+    public static boolean contains(Enumeration<?> enumeration, Object element) {
         if (enumeration != null) {
             while (enumeration.hasMoreElements()) {
                 Object candidate = enumeration.nextElement();
@@ -199,7 +199,7 @@ public abstract class CollectionUtils {
      * or {@code null} if none or more than one such value found
      */
     @SuppressWarnings("unchecked")
-    public static <T> T findValueOfType(Collection<?> collection,  Class<T> type) {
+    public static <T> T findValueOfType(Collection<?> collection, Class<T> type) {
         if (isEmpty(collection)) {
             return null;
         }
@@ -301,7 +301,7 @@ public abstract class CollectionUtils {
      * @since 5.0.3
      */
 
-    public static <T> T lastElement( Set<T> set) {
+    public static <T> T lastElement(Set<T> set) {
         if (isEmpty(set)) {
             return null;
         }
@@ -335,6 +335,7 @@ public abstract class CollectionUtils {
 
     /**
      * 简化值Map集合创建、赋值操作
+     *
      * @param clazz1 Key 类型
      * @param clazz2 Value 类型
      * @return 值集合对象
@@ -346,6 +347,7 @@ public abstract class CollectionUtils {
 
     /**
      * 简化值Map集合创建、赋值操作
+     *
      * @return 默认类型为<String, Object>值集合对象
      */
     public static ValueMap<String, Object> createValueMap() {
@@ -358,13 +360,13 @@ public abstract class CollectionUtils {
      * @param map 源Map
      * @return map
      */
-    public static <K,V> Map<K, V> clone(Map<K, V> map){
+    public static <K, V> Map<K, V> clone(Map<K, V> map) {
         Objects.nonNull(map);
 
         Map<K, V> cloneMap = new HashMap<>();
         Set<Map.Entry<K, V>> entrySet = map.entrySet();
         Iterator<Map.Entry<K, V>> iterator = entrySet.iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Map.Entry<K, V> entry = iterator.next();
             cloneMap.put(entry.getKey(), entry.getValue());
         }
@@ -379,9 +381,7 @@ public abstract class CollectionUtils {
      */
     public static <K, V> void copy(Map<K, V> sourceMap, Map<K, V> targetMap) {
         Set<Map.Entry<K, V>> entrySet = sourceMap.entrySet();
-        Iterator<Map.Entry<K, V>> iterator = entrySet.iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<K, V> entry = iterator.next();
+        for (Map.Entry<K, V> entry : entrySet) {
             targetMap.put(entry.getKey(), entry.getValue());
         }
     }

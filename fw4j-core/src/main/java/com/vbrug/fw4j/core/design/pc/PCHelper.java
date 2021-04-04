@@ -4,8 +4,8 @@ import com.vbrug.fw4j.common.util.Assert;
 import com.vbrug.fw4j.core.thread.ThreadState;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author vbrug
@@ -13,20 +13,25 @@ import java.util.List;
  */
 public class PCHelper {
 
-    private final List<Producer> producerList;
-    private final List<Consumer> consumerList;
+    private final List<Producer> producerList = new ArrayList<>();
+    private final List<Consumer> consumerList = new ArrayList<>();
 
-    public PCHelper(Producer... producers) {
-        this(Arrays.asList(producers), null);
+    /**
+     * 增加管理生产者
+     */
+    public void addProducer(Producer... producers) {
+        for (Producer producer : producers) {
+            producerList.add(producer);
+        }
     }
 
-    public PCHelper(Consumer... consumers) {
-        this(null, Arrays.asList(consumers));
-    }
-
-    public PCHelper(List<Producer> producerList, List<Consumer> consumerList) {
-        this.producerList = producerList;
-        this.consumerList = consumerList;
+    /**
+     * 增加管理消费者
+     */
+    public void addConsumer(Consumer... consumers) {
+        for (Consumer producer : consumers) {
+            consumerList.add(producer);
+        }
     }
 
     /**
@@ -99,11 +104,24 @@ public class PCHelper {
         return this.getAliveConsumer().length == 0 && this.getAliveProducer().length == 0 ? true : false;
     }
 
+    public void start() throws InterruptedException {
+        for (Consumer consumer : consumerList) {
+            consumer.start();
+        }
+        for (Producer producer : this.producerList) {
+            producer.start();
+        }
+        TimeUnit.SECONDS.sleep(5);
+    }
+
     public static void main(String[] args) {
         double atan = Math.atan(-1 / 1);
         System.out.println(atan / Math.PI * 2);
         System.out.println(Math.tan(Math.toRadians(45)));
         System.out.println(Math.toDegrees(atan));
+        String value = "说得好阜康市'sdflsfjs\\'";
+        System.out.println(value.replaceAll("\\\\", "\\\\\\\\"));
+        System.out.println(Integer.MIN_VALUE);
     }
 
 }
