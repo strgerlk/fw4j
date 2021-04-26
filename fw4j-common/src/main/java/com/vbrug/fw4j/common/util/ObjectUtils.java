@@ -11,7 +11,6 @@ import java.util.Objects;
 
 /**
  * 对象工具类
- *
  * @author vbrug
  * @since 1.0.0
  */
@@ -20,28 +19,38 @@ public abstract class ObjectUtils {
     /**
      * 判断对象为空，集合校验size
      */
-    public static boolean isNull(Object... objects){
-        return ObjectUtils.isEmpty(objects);
+    public static boolean isNull(Object... objects) {
+        if (objects == null) return true;
+        for (Object object : objects) {
+            if (!ObjectUtils.isEmpty(object))
+                return false;
+        }
+        return true;
     }
 
     /**
      * 判断对象非空，集合校验size
      */
     public static boolean notNull(Object... objects) {
-        return ObjectUtils.notEmpty(objects);
+        if (objects == null) return false;
+        for (Object object : objects) {
+            if (ObjectUtils.isEmpty(object))
+                return false;
+        }
+        return true;
     }
 
     /**
      * 对象非空判断
      */
-    public static boolean notEmpty(Object obj){
-        return ! ObjectUtils.isEmpty(obj);
+    public static boolean notEmpty(Object obj) {
+        return !ObjectUtils.isEmpty(obj);
     }
 
     /**
      * 对象空判断
      */
-    public static boolean isEmpty(Object obj){
+    public static boolean isEmpty(Object obj) {
         if (obj == null)
             return true;
 
@@ -55,7 +64,7 @@ public abstract class ObjectUtils {
             return ((Collection<?>) obj).isEmpty();
         }
         if (obj instanceof Map) {
-            return ((Map<?, ?>)obj).isEmpty();
+            return ((Map<?, ?>) obj).isEmpty();
         }
         return false;
     }
@@ -84,7 +93,7 @@ public abstract class ObjectUtils {
             return new Object[0];
         }
         Class<?> wrapperType = Array.get(source, 0).getClass();
-        Object[] newArray = (Object[]) Array.newInstance(wrapperType, length);
+        Object[] newArray    = (Object[]) Array.newInstance(wrapperType, length);
         for (int i = 0; i < length; i++) {
             newArray[i] = Array.get(source, i);
         }
@@ -164,11 +173,11 @@ public abstract class ObjectUtils {
         return (T) object;
     }
 
-    public static Integer castInteger(Object object){
+    public static Integer castInteger(Object object) {
         return castObject(object, Integer.class);
     }
 
-    public static Long castLong(Object object){
+    public static Long castLong(Object object) {
         return castObject(object, Long.class);
     }
 
@@ -185,7 +194,7 @@ public abstract class ObjectUtils {
         PropertyDescriptor[] descriptors = Introspector.getBeanInfo(obj.getClass())
                 .getPropertyDescriptors();
         for (PropertyDescriptor descriptor : descriptors) {
-            Method readMethod = descriptor.getReadMethod();
+            Method readMethod  = descriptor.getReadMethod();
             Method writeMethod = descriptor.getWriteMethod();
             if (Objects.isNull(readMethod) || Objects.isNull(writeMethod))
                 continue;

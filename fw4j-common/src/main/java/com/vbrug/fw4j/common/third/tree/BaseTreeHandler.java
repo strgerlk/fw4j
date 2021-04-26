@@ -91,6 +91,8 @@ public class BaseTreeHandler<E, T> {
     private void add_(TreeNode<E, T> node) {
         /* 01-判断当前节点是否重复 */
         Assert.isNull(treeIndex.get(node.getCode()), "节点：" + node.getCode() + " 已存在");
+        if (node.getCode().equals(node.getParentCode()))
+            throw new RuntimeException("节点： "+node.getCode()+" 自身编号和父级编号相同");
 
         /* 02-匹配当前一级是否有当前节点的子节点 */
         List<TreeNode<E, T>> rootChildren = this.vRoot.getChildren();
@@ -106,9 +108,6 @@ public class BaseTreeHandler<E, T> {
         /* 03-遍历查找父节点 */
         AtomicBoolean hasParent = new AtomicBoolean(false);
         this.vRoot.bfs(x -> {
-            // 虚拟根节点跳过
-            if (x.getLevel() == -1)
-                return true;
             if (x.getCode().equals(node.getParentCode())) {
                 if (x.getChildren() == null)
                     x.setChildren(new ArrayList<>());

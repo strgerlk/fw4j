@@ -16,8 +16,13 @@ public class TreeNode<E, T> implements Cloneable {
     private E                    parentCode;
     private String               name;
     private List<TreeNode<E, T>> children;
-    private int                  level;
+    private int                  level = 0;
     private T                    attributes;
+    private boolean              isLeaf;
+
+    public boolean isLeaf() {
+        return children == null || children.isEmpty();
+    }
 
     public E getCode() {
         return code;

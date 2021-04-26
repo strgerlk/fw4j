@@ -51,7 +51,7 @@ public class PostRequest extends BaseRequest {
         this.client.close();
     }
 
-    private void setEntity() {
+    private void setEntity() throws IOException {
         if (!CollectionUtils.isEmpty(this.paramMap))
             httpPost.setEntity(new StringEntity(JacksonUtils.bean2Json(this.paramMap), "utf-8"));
     }

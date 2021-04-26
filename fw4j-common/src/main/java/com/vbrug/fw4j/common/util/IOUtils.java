@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * @author LK
+ * @author 文件工具
  * @since 1.0
  */
 public abstract class IOUtils {

@@ -2,7 +2,14 @@ package com.vbrug.fw4j.common.util;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.MapType;
+import com.vbrug.fw4j.common.third.tree.BaseTreeHandler;
+import com.vbrug.fw4j.common.third.tree.TreeNode;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -11,7 +18,6 @@ import java.util.*;
 
 /**
  * JSON解析工具
- *
  * @author vbrug
  * @since 1.0.0
  */
@@ -34,119 +40,228 @@ public abstract class JacksonUtils {
 
     /**
      * 将bean序列化为JSON字符串
-     *
      * @param object 待序列化对象
      * @return 返回序列化后的字符串
      */
-    public static String bean2Json(Object object) {
-        StringWriter sw = new StringWriter();
+    public static String bean2Json(Object object) throws IOException {
+        StringWriter  sw  = new StringWriter();
+        JsonGenerator gen = null;
         try {
-            JsonGenerator gen = new JsonFactory().createGenerator(sw);
+            gen = new JsonFactory().createGenerator(sw);
             mapper.writeValue(gen, object);
-            gen.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } finally {
+            Objects.requireNonNull(gen).close();
         }
         return sw.toString();
     }
 
-    public static <T> T json2Bean(String jsonStr, Class<T> clazz) {
-        try {
-            return mapper.readValue(jsonStr, clazz);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static Map json2Map(String jsonStr) {
-        return JacksonUtils.json2Bean(jsonStr, Map.class);
-    }
-
-    public static List<Map> jsonToListMap(String jsonStr) throws IOException {
-        JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, Map.class);
-        return mapper.readValue(jsonStr, javaType);
-    }
-
-    public static <T> List<T> jsonToList(String jsonStr, Class<T> clazz) throws IOException {
-        JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, clazz);
-        return mapper.readValue(jsonStr, javaType);
-    }
-
     /**
-     * 将json串转为平铺Map集合
-     *
-     * @param jsonStr 源json串
-     * @return 结果
+     * 将json解析为bean对象
+     * @param jsonStr 待解析字符串
+     * @param <T>     clazz  泛型class
+     * @return 解析后的结果
      */
-    public static List<Map<String, Object>> jsonToTileList(String jsonStr) {
-
-        // 解析Map
-        Map parseMap = json2Map(jsonStr);
-        if (parseMap == null) return null;
-
-        // 遍历
-        Iterator keyIterator = parseMap.keySet().iterator();
-        Map<String, Object> rootMap = new HashMap<>();
-        List<Map<String, Object>> childList = new ArrayList<>();
-        while (keyIterator.hasNext()) {
-            Object key = keyIterator.next();
-            Object value = parseMap.get(key);
-            if (value instanceof List) {
-                List valueList = (List) value;
-                valueList.forEach(x -> {
-                    if (x instanceof Map) {
-                        Map<String, Object> dataMap = (Map<String, Object>) x;
-                        Map.Entry<String, Object> entry = dataMap.entrySet().iterator().next();
-                        dataMap.put("featureCode", entry.getKey());
-                        dataMap.put("featureValue", entry.getValue());
-                        childList.add(dataMap);
-                    } else {
-                        childList.add(CollectionUtils.createValueMap().add(String.valueOf(key), x).build());
-                    }
-                });
-            } else {
-                rootMap.put(String.valueOf(key), value);
-            }
-        }
-
-        // 合并集合
-        if (!CollectionUtils.isEmpty(childList)) {
-            childList.forEach(x -> CollectionUtils.copy(rootMap, x));
-        }
-        return childList;
+    public static <T> T json2Bean(String jsonStr, Class<T> clazz) throws IOException {
+        return mapper.readValue(jsonStr, clazz);
     }
 
     /**
      * 解析字符串转为jsonNode
-     *
      * @param jsonStr 源字符串
      * @return JsonNode
      */
-    public static JsonNode json2Node(String jsonStr) {
-        JsonNode jsonNode = null;
-        try {
-            jsonNode = mapper.readTree(jsonStr);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static JsonNode json2Node(String jsonStr) throws IOException {
+        return mapper.readTree(jsonStr);
+    }
+
+    /**
+     * 将json解析为Map对象
+     * @param jsonStr 待解析字符串
+     * @param <K>     keyClass  Map泛型class参数一
+     * @param <V>     valueClass  Map泛型class参数二
+     * @return 解析后的结果
+     */
+    public static <K, V> Map<K, V> json2Map(String jsonStr, Class<K> keyClass, Class<V> valueClass) throws IOException {
+        MapType mapType = mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass);
+        return mapper.readValue(jsonStr, mapType);
+    }
+
+    /**
+     * 将json解析为List集合对象
+     * @param jsonStr 待解析字符串
+     * @param <T>     clazz  List泛型class参数
+     * @return 解析后的结果
+     */
+    public static <T> List<T> jsonToList(String jsonStr, Class<T> clazz) throws IOException {
+        CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, clazz);
+        return mapper.readValue(jsonStr, collectionType);
+    }
+
+    /**
+     * 将json解析为Map对象
+     * @param jsonStr 待解析字符串
+     * @param <K>     keyClass  Map泛型class参数一
+     * @param <V>     valueClass  Map泛型class参数二
+     * @return 解析后的结果
+     */
+    public static <K, V> List<Map<K, V>> jsonToListMap(String jsonStr, Class<K> keyClass, Class<V> valueClass) throws IOException {
+        MapType        mapType        = mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass);
+        CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, mapType);
+        return mapper.readValue(jsonStr, collectionType);
+    }
+
+
+    /**
+     * 将json串转为平铺Map集合
+     * @param jsonStr 源json串
+     * @return 结果
+     */
+    public static List<Map<String, String>> json2TileList(String jsonStr, String parsePath) throws IOException {
+
+        Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串为空");
+        Assert.state(!StringUtils.isEmpty(parsePath), "parsePath为空");
+
+        // 解析json字符串
+        JsonNode rootNode = json2Node(jsonStr);
+        if (rootNode == null || rootNode.isNull()) {
+            return null;
         }
-        return jsonNode;
+
+        // 构建解析树
+        String[]                                     pathArray   = parsePath.replaceAll("(\\\\+|/+)", "/").split("/");
+        BaseTreeHandler<String, Map<String, String>> treeHandler = buildTree(rootNode, pathArray);
+
+        // 查找叶子节点
+        List<TreeNode<String, Map<String, String>>> leafList = new ArrayList<>();
+        treeHandler.get("root").bfs(x -> {
+            if (x.isLeaf()) leafList.add(x);
+        });
+
+        // 生成结果
+        List<Map<String, String>> dataList = new ArrayList<>();
+        leafList.forEach(x -> {
+            Map<String, String>                   map            = x.getAttributes();
+            TreeNode<String, Map<String, String>> parentTreeNode = treeHandler.get(x.getParentCode());
+            while (parentTreeNode != null) {
+                CollectionUtils.copy(parentTreeNode.getAttributes(), map, false);
+                parentTreeNode = treeHandler.get(parentTreeNode.getParentCode());
+            }
+            dataList.add(map);
+        });
+
+        return dataList;
     }
 
-    public static void main(String[] args) {
-//        String content = "{'caseNo': '201901150752051212174389', 'featureList': [{'carinfo': '苏EW65K2'}, {'carinfo': '浙JA992G'}, {'carinfo': '沪BME033'}]}";
-        String content = "{'caseNo': '201901150752051212174389', 'featureList': []}";
 
+    /**
+     * 构建解析树
+     * @param rootJsonNode 根节点
+     * @param pathArray    解析路径
+     * @return 返回解析树
+     */
+    private static BaseTreeHandler<String, Map<String, String>> buildTree(JsonNode rootJsonNode, String[] pathArray) {
+        List<TreeNode<String, Map<String, String>>> treeNodeList = new ArrayList<>();
 
-//        content = "{\"centerCaseNo\":\"201901010716545472234586\", \"caseNo\":['201812311654104552789604', '201812311719105852127089', '201812311949377182271351', '201812312114500032206703', '201812312135359132366156', '201901010020184242247439', '201901010449357512334851', '201901010514469552497236', '201901011124020952693385', '201901011344085492929174']}";
+        Queue<JNode> jNodeQueue = new LinkedList<>();
+        JNode        jNode      = new JNode();
+        jNode.setJsonNode(rootJsonNode);
+        jNode.setPathLevel(0);
+        jNode.setTreeNodeCode("root");
+        jNodeQueue.add(jNode);
+        while (!jNodeQueue.isEmpty()) {
+            // 变量初始化
+            JNode                                 pollJNode  = jNodeQueue.poll();
+            TreeNode<String, Map<String, String>> treeNode   = new TreeNode<>();
+            Map<String, String>                   attributes = new HashMap<>();
+            // 处理其他属性
+            JsonNode pollJsonNode = pollJNode.getJsonNode();
+            if (pollJsonNode.isValueNode()) {
+                attributes.put(pathArray[pollJNode.getPathLevel() - 1], pollJsonNode.textValue());
+            } else {
+                Iterator<String> fieldNames = pollJsonNode.fieldNames();
+                while (fieldNames.hasNext()) {
+                    String next = fieldNames.next();
+                    if (pollJNode.getPathLevel() < pathArray.length && next.equals(pathArray[pollJNode.getPathLevel()]))
+                        continue;
+                    attributes.put(next, pollJsonNode.get(next).textValue());
+                }
+            }
 
-        List<Map<String, Object>> maps = JacksonUtils.jsonToTileList(content.replaceAll("'", "\""));
-        System.out.println(maps.size());
+            treeNode.setAttributes(attributes);
+            // 处理节点编号
+            treeNode.setCode(pollJNode.getTreeNodeCode());
+            if (ObjectUtils.notNull(pollJNode.getParentTreeNode()))
+                treeNode.setParentCode(pollJNode.getParentTreeNode().getCode());
 
-        String tsv = "01901101545097672385451        9999";
-        String[] split = tsv.split("\t");
-        System.out.println(tsv.split("\\s+").length);
+            // 加入List
+            treeNodeList.add(treeNode);
 
-        System.out.println(String.valueOf(null));
+            // 处理路径节点
+            if (pollJNode.getPathLevel() >= pathArray.length) continue;
+            JsonNode pathJsonNode = pollJsonNode.get(pathArray[pollJNode.getPathLevel()]);
+            if (pathJsonNode != null) {
+                if (pathJsonNode.isArray()) {
+                    Iterator<JsonNode> pathNodeArray = pathJsonNode.elements();
+                    int                i             = 0;
+                    while (pathNodeArray.hasNext()) {
+                        JsonNode loopJsonNode = pathNodeArray.next();
+                        JNode    todoJNode    = new JNode();
+                        todoJNode.setParentTreeNode(treeNode);
+                        todoJNode.setPathLevel(pollJNode.getPathLevel() + 1);
+                        todoJNode.setTreeNodeCode(treeNode.getCode() + "_" + pathArray[pollJNode.getPathLevel()] + "-" + i);
+                        todoJNode.setJsonNode(loopJsonNode);
+                        jNodeQueue.add(todoJNode);
+                        i++;
+                    }
+                } else {
+                    JNode todoJNode = new JNode();
+                    todoJNode.setParentTreeNode(treeNode);
+                    todoJNode.setPathLevel(pollJNode.getPathLevel() + 1);
+                    todoJNode.setTreeNodeCode(treeNode.getCode() + "_" + pathArray[pollJNode.getPathLevel()]);
+                    todoJNode.setJsonNode(pathJsonNode);
+                    jNodeQueue.add(todoJNode);
+                }
+            }
+        }
+        return new BaseTreeHandler<>(treeNodeList);
     }
 
+    private static class JNode {
+        private TreeNode<String, Map<String, String>> parentTreeNode;
+        private String                                treeNodeCode;
+        private int                                   pathLevel;
+        private JsonNode                              jsonNode;
+
+        public TreeNode<String, Map<String, String>> getParentTreeNode() {
+            return parentTreeNode;
+        }
+
+        public void setParentTreeNode(TreeNode<String, Map<String, String>> parentTreeNode) {
+            this.parentTreeNode = parentTreeNode;
+        }
+
+        public String getTreeNodeCode() {
+            return treeNodeCode;
+        }
+
+        public void setTreeNodeCode(String treeNodeCode) {
+            this.treeNodeCode = treeNodeCode;
+        }
+
+        public int getPathLevel() {
+            return pathLevel;
+        }
+
+        public void setPathLevel(int pathLevel) {
+            this.pathLevel = pathLevel;
+        }
+
+        public JsonNode getJsonNode() {
+            return jsonNode;
+        }
+
+        public void setJsonNode(JsonNode jsonNode) {
+            this.jsonNode = jsonNode;
+        }
+    }
 }

@@ -36,8 +36,10 @@ public class TreeUtils {
         toVisitQueue.add(node);
         while (!toVisitQueue.isEmpty()) {
             TreeNode<E, T> pollNode = toVisitQueue.poll();
-            if (!function.apply(pollNode))
+            // level 小于0为虚拟节点，不遍历
+            if (pollNode.getLevel() >= 0 && !function.apply(pollNode)) {
                 break;
+            }
             if (!ObjectUtils.isEmpty(pollNode.getChildren()))
                 toVisitQueue.addAll(pollNode.getChildren());
         }
