@@ -20,13 +20,13 @@ public class BeanUtils {
         Assert.notNull(source, "Source must not be null");
         Assert.notNull(target, "Target must not be null");
 
-        PropertyDescriptor[] targetPds = ClassUtils.getPropertyDescriptor(target);
+        PropertyDescriptor[] targetPds = ClassUtils.getPropertyDescriptor(target.getClass());
 
         for (PropertyDescriptor targetPd : targetPds) {
             if ("class".equals(targetPd.getName()))
                 continue;
             Method writeMethod = targetPd.getWriteMethod();
-            PropertyDescriptor sourcePd = ClassUtils.getPropertyDescriptor(source, targetPd.getName());
+            PropertyDescriptor sourcePd = ClassUtils.getPropertyDescriptor(source.getClass(), targetPd.getName());
             if (sourcePd != null) {
                 Method readMethod = sourcePd.getReadMethod();
                 if (readMethod != null) {

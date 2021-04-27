@@ -16,7 +16,7 @@ import java.util.Map;
 public class ParamTreeHandlerTest {
 
     public static void main(String[] args) throws Exception {
-        String filePath = "/home/vbrug/TMP/bz_deal.tsv";
+        String filePath = "/home/vbrug/TMP/hd_xqdw.tsv";
         fullCodeClear(filePath);
         ckParamClear(filePath);
     }

@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Excel解析工具
  */
-public interface ExcelParser<T> {
+public interface ExcelParser {
 
     /**
      * 解析Excel，
@@ -19,22 +19,38 @@ public interface ExcelParser<T> {
 
     /**
      * 解析Excel，
+     * @param is 输入流
+     * @return 解析结果
+     * @throws Exception 解析异常
+     */
+    List<Map<String, String>> parseExcel(InputStream is, String... fields) throws Exception;
+
+    /**
+     * 解析Excel，
+     * @param is 输入流
+     * @return 解析结果
+     * @throws Exception 解析异常
+     */
+    List<Map<String, String>> parseExcel(InputStream is, int sheetIndex, int startRowIndex, int maxRows, String... fields) throws Exception;
+
+    /**
+     * 解析Excel，
      * @param is    输入流
      * @param clazz 对应BEAN类
      * @return 解析结果
      * @throws Exception 解析异常
      */
-    List<T> parseExcel(InputStream is, Class<T> clazz) throws Exception;
+    <T> List<T> parseExcel(InputStream is, Class<T> clazz) throws Exception;
 
     /**
      * 解析Excel，
      * @param is     输入流
-     * @param fields excel对应BEAN字段
      * @param clazz  对应BEAN类
+     * @param fields excel对应BEAN字段
      * @return 解析结果
      * @throws Exception 解析异常
      */
-    List<T> parseExcel(InputStream is, String[] fields, Class<T> clazz) throws Exception;
+    <T> List<T> parseExcel(InputStream is, Class<T> clazz, String... fields) throws Exception;
 
 
     /**
@@ -47,6 +63,6 @@ public interface ExcelParser<T> {
      * @return 解析结果
      * @throws Exception 解析异常
      */
-    List<T> parseExcel(InputStream is, String[] fields, Class<T> clazz, int startRowIndex, int maxRows) throws Exception;
+    <T> List<T> parseExcel(InputStream is, Class<T> clazz, int sheetIndex, int startRowIndex, int maxRows, String... fields) throws Exception;
 
 }

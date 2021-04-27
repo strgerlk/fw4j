@@ -178,9 +178,4 @@ public abstract class DateUtils {
         dateList.add(endDate);
         return dateList;
     }
-
-    public static void main(String[] args) {
-        System.out.println(avgSplitDate("2020-01-01 05:29:29", "2020-08-01 05:29:29", 4));
-    }
-
 }
