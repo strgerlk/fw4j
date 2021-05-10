@@ -14,7 +14,7 @@ public abstract class IdGenerator {
 
     private static long lastTimestamp = 0L;
 
-    private static final SnowFlake SNOW_FLAKE = new SnowFlake(1,1);
+    private static final SnowFlake SNOW_FLAKE = new SnowFlake(1, 1);
 
     /**
      * Retrieve a UUID
@@ -26,8 +26,7 @@ public abstract class IdGenerator {
 
     /**
      * 移除UUID的横线
-     *
-     * @return 
+     * @return
      */
     public static String randomUUIDRmLine() {
         return randomUUID().replaceAll("-", "");
@@ -36,14 +35,13 @@ public abstract class IdGenerator {
     /**
      * 获取毫秒级日期字符串
      * <p>保证唯一加锁，注意高并发效率</p>
-     *
      * @return 返回日期毫秒级字符串
      */
     public static String nextMillis() {
         long currTimestamp;
         synchronized (IdGenerator.class) {
             currTimestamp = System.currentTimeMillis();
-            while(lastTimestamp == currTimestamp) {
+            while (lastTimestamp == currTimestamp) {
                 currTimestamp = System.currentTimeMillis();
             }
             lastTimestamp = currTimestamp;
@@ -52,9 +50,17 @@ public abstract class IdGenerator {
     }
 
     /**
+     * 获取毫秒级日期数字
+     * <p>保证唯一加锁，注意高并发效率</p>
+     * @return 返回日期毫秒级数字
+     */
+    public static long nextMillis2() {
+        return Long.parseLong(nextMillis());
+    }
+
+    /**
      * 雪花算法生成ID
      * <pre>每毫秒可生成4096个ID</pre>
-     *
      * @return ID
      */
     public static long nextId() {

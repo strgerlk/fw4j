@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 
 /**
  * 字符串工具类
- *
  * @author vbrug
  * @since 1.0.0
  */
@@ -20,7 +19,6 @@ public class StringUtils {
 
     /**
      * 校验字符串是否有内容，且不可为空字符串
-     *
      * @param str 待校验字符串
      * @return Boolean 判断结果
      */
@@ -40,7 +38,6 @@ public class StringUtils {
 
     /**
      * 校验字符长度
-     *
      * @param str 待校验字符
      * @return Boolean 判断结果
      */
@@ -50,15 +47,14 @@ public class StringUtils {
 
     /**
      * 下划线转驼峰
-     *
      * @param str 待处理字符串
      * @return 驼峰字符串
      */
     public static String lineToHump(String str) {
         Pattern linePattern = Pattern.compile("_(\\w)");
         str = str.toLowerCase();
-        Matcher matcher = linePattern.matcher(str);
-        StringBuffer sb = new StringBuffer();
+        Matcher      matcher = linePattern.matcher(str);
+        StringBuffer sb      = new StringBuffer();
         while (matcher.find()) {
             matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
         }
@@ -68,7 +64,6 @@ public class StringUtils {
 
     /**
      * 驼峰转下划线(简单写法，效率低于{@link #humpToLine2(String)})
-     *
      * @param str 待处理字符串
      * @return 下划线字符串
      */
@@ -79,14 +74,13 @@ public class StringUtils {
 
     /**
      * 驼峰转下划线(效率高于{@link #humpToLine(String)})
-     *
      * @param str 待处理字符串
      * @return 下划线字符串
      */
     public static String humpToLine2(String str) {
-        Pattern humpPattern = Pattern.compile("[A-Z]");
-        Matcher matcher = humpPattern.matcher(str);
-        StringBuffer sb = new StringBuffer();
+        Pattern      humpPattern = Pattern.compile("[A-Z]");
+        Matcher      matcher     = humpPattern.matcher(str);
+        StringBuffer sb          = new StringBuffer();
         while (matcher.find()) {
             matcher.appendReplacement(sb, "_" + matcher.group(0).toLowerCase());
         }
@@ -103,7 +97,6 @@ public class StringUtils {
 
     /**
      * 删除前后字符
-     *
      * @param content
      * @param trimStr
      * @return
@@ -118,7 +111,6 @@ public class StringUtils {
 
     /**
      * 字符串右补位
-     *
      * @param src      源字符串
      * @param fillChar 补位字符
      * @param length   总长度
@@ -130,7 +122,6 @@ public class StringUtils {
 
     /**
      * 字符串左补位
-     *
      * @param src      源字符串
      * @param fillChar 补位字符
      * @param length   总长度
@@ -140,10 +131,27 @@ public class StringUtils {
         return fillChar(src, fillChar, length, "left");
     }
 
+    /**
+     * @param src
+     * @param zw
+     * @param args
+     * @return
+     */
+    public static String replaceZW(String src, String zw, Object... args) {
+        for (Object arg : args) {
+            String value;
+            if (arg instanceof String)
+                value = String.valueOf(arg);
+            else
+                value = JacksonUtils.bean2Json(arg);
+            src = src.replaceFirst(zw, value);
+        }
+        return src;
+    }
+
 
     /**
      * 字符串提取
-     *
      * @param content       待提取内容
      * @param regexpPattern 匹配表达式
      * @return 匹配的第一个字符串
@@ -154,15 +162,14 @@ public class StringUtils {
 
     /**
      * 字符串提取
-     *
      * @param content       待提取内容
      * @param regexpPattern 匹配表达式
      * @return 匹配到的字符串
      */
     public static List<String> extractAll(String content, String regexpPattern) {
         List<String> resultList = new ArrayList<String>();
-        Pattern p = Pattern.compile(regexpPattern);
-        Matcher m = p.matcher(content);
+        Pattern      p          = Pattern.compile(regexpPattern);
+        Matcher      m          = p.matcher(content);
         while (m.find()) {
             resultList.add(m.group());
         }
@@ -171,7 +178,6 @@ public class StringUtils {
 
     /**
      * 居中补充，左右填补相同字符，填充到相同长度
-     *
      * @param src      源字符串
      * @param fillChar 待填充字符
      * @param length   长度
@@ -196,7 +202,6 @@ public class StringUtils {
 
     /**
      * 字符串补位
-     *
      * @param src      源字符串
      * @param fillChar 补位字符
      * @param length   总长度

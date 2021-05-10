@@ -130,7 +130,7 @@ public class ExcelParserXLSX extends BaseExcelParser implements ExcelParser {
                         value = new SimpleDateFormat(DateUtils.YYYY_MM_DD).format(loopCell.getDateCellValue());
                         break;
                     }
-                    value = String.valueOf(loopCell.getNumericCellValue());
+                    value = loopCell.getRawValue();
                     break;
                 case BLANK:
                     value = null;

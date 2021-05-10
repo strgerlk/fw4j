@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapType;
+import com.vbrug.fw4j.common.exception.Fw4jException;
 import com.vbrug.fw4j.common.third.tree.BaseTreeHandler;
 import com.vbrug.fw4j.common.third.tree.TreeNode;
 
@@ -43,14 +44,20 @@ public abstract class JacksonUtils {
      * @param object 待序列化对象
      * @return 返回序列化后的字符串
      */
-    public static String bean2Json(Object object) throws IOException {
+    public static String bean2Json(Object object) {
         StringWriter  sw  = new StringWriter();
         JsonGenerator gen = null;
         try {
             gen = new JsonFactory().createGenerator(sw);
             mapper.writeValue(gen, object);
+        } catch (IOException e) {
+            throw new Fw4jException(e, "对象{}转JSON出错", object);
         } finally {
-            Objects.requireNonNull(gen).close();
+            try {
+                Objects.requireNonNull(gen).close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return sw.toString();
     }
@@ -61,8 +68,12 @@ public abstract class JacksonUtils {
      * @param <T>     clazz  泛型class
      * @return 解析后的结果
      */
-    public static <T> T json2Bean(String jsonStr, Class<T> clazz) throws IOException {
-        return mapper.readValue(jsonStr, clazz);
+    public static <T> T json2Bean(String jsonStr, Class<T> clazz) {
+        try {
+            return mapper.readValue(jsonStr, clazz);
+        } catch (IOException e) {
+            throw new Fw4jException(e, "JSON {}转对象出错", jsonStr);
+        }
     }
 
     /**
@@ -70,8 +81,12 @@ public abstract class JacksonUtils {
      * @param jsonStr 源字符串
      * @return JsonNode
      */
-    public static JsonNode json2Node(String jsonStr) throws IOException {
-        return mapper.readTree(jsonStr);
+    public static JsonNode json2Node(String jsonStr) {
+        try {
+            return mapper.readTree(jsonStr);
+        } catch (IOException e) {
+            throw new Fw4jException(e, "JSON {}转json对象出错", jsonStr);
+        }
     }
 
     /**
@@ -81,9 +96,13 @@ public abstract class JacksonUtils {
      * @param <V>     valueClass  Map泛型class参数二
      * @return 解析后的结果
      */
-    public static <K, V> Map<K, V> json2Map(String jsonStr, Class<K> keyClass, Class<V> valueClass) throws IOException {
+    public static <K, V> Map<K, V> json2Map(String jsonStr, Class<K> keyClass, Class<V> valueClass) {
         MapType mapType = mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass);
-        return mapper.readValue(jsonStr, mapType);
+        try {
+            return mapper.readValue(jsonStr, mapType);
+        } catch (IOException e) {
+            throw new Fw4jException(e, "JSON {}转Map对象出错", jsonStr);
+        }
     }
 
     /**
@@ -92,9 +111,13 @@ public abstract class JacksonUtils {
      * @param <T>     clazz  List泛型class参数
      * @return 解析后的结果
      */
-    public static <T> List<T> jsonToList(String jsonStr, Class<T> clazz) throws IOException {
+    public static <T> List<T> jsonToList(String jsonStr, Class<T> clazz) {
         CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, clazz);
-        return mapper.readValue(jsonStr, collectionType);
+        try {
+            return mapper.readValue(jsonStr, collectionType);
+        } catch (IOException e) {
+            throw new Fw4jException(e, "JSON {}转List对象出错", jsonStr);
+        }
     }
 
     /**
@@ -104,10 +127,14 @@ public abstract class JacksonUtils {
      * @param <V>     valueClass  Map泛型class参数二
      * @return 解析后的结果
      */
-    public static <K, V> List<Map<K, V>> jsonToListMap(String jsonStr, Class<K> keyClass, Class<V> valueClass) throws IOException {
+    public static <K, V> List<Map<K, V>> jsonToListMap(String jsonStr, Class<K> keyClass, Class<V> valueClass) {
         MapType        mapType        = mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass);
         CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, mapType);
-        return mapper.readValue(jsonStr, collectionType);
+        try {
+            return mapper.readValue(jsonStr, collectionType);
+        } catch (IOException e) {
+            throw new Fw4jException(e, "JSON {}转List<Map>对象出错", jsonStr);
+        }
     }
 
 
@@ -116,7 +143,7 @@ public abstract class JacksonUtils {
      * @param jsonStr 源json串
      * @return 结果
      */
-    public static List<Map<String, String>> json2TileList(String jsonStr, String parsePath) throws IOException {
+    public static List<Map<String, String>> json2TileList(String jsonStr, String parsePath) {
 
         Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串为空");
         Assert.state(!StringUtils.isEmpty(parsePath), "parsePath为空");
