@@ -10,10 +10,9 @@ import java.util.Map;
  * @author vbrug
  * @since 1.0.0
  */
-public class ParamTreeHandler<E, T> extends BaseTreeHandler<E, T> {
+public class ParamTree<T, D> extends AbstractTree<T, D> {
 
-
-    public ParamTreeHandler(List<TreeNode<E, T>> treeNodeList) {super(treeNodeList);}
+    public ParamTree(List<TreeNode<T, D>> treeNodeList) {super(treeNodeList);}
 
     /**
      * ck码表处理
@@ -23,10 +22,10 @@ public class ParamTreeHandler<E, T> extends BaseTreeHandler<E, T> {
         this.vRoot.bfs(x -> {
             x.bfs(y -> {
                 Map<String, Object> map = new HashMap<>();
-                map.put("superCode", x.getCode());
+                map.put("superCode", x.getId());
                 map.put("superName", x.getName());
                 map.put("superLevel", x.getLevel());
-                map.put("code", y.getCode());
+                map.put("code", y.getId());
                 map.put("name", y.getName());
                 map.put("level", y.getLevel());
                 mapList.add(map);
@@ -42,16 +41,16 @@ public class ParamTreeHandler<E, T> extends BaseTreeHandler<E, T> {
         List<Map<String, Object>> mapList = new ArrayList<>();
         this.vRoot.bfs(x -> {
             Map<String, Object> map = new HashMap<>();
-            map.put("code", x.getCode());
+            map.put("code", x.getId());
             map.put("name", x.getName());
-            map.put("parentCode", x.getParentCode());
+            map.put("parentCode", x.getParentId());
             map.put("level", x.getLevel());
             // 计算全编号
             String         fullCode = "";
-            TreeNode<E, T> loopNode = x;
+            TreeNode<T, D> loopNode = x;
             while (loopNode != null) {
-                fullCode = "-" + loopNode.getCode() + fullCode;
-                loopNode = get(loopNode.getParentCode());
+                fullCode = "-" + loopNode.getId() + fullCode;
+                loopNode = get(loopNode.getParentId());
             }
             map.put("fullCode", fullCode);
             mapList.add(map);

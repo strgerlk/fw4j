@@ -1,17 +1,15 @@
 package com.vbrug.fw4j.common.third.graph;
 
-import java.util.LinkedList;
-
 /**
  * @author vbrug
  * @since 1.0.0
  */
-public class Vertex<E, T> {
+public class Vertex<T, D> {
 
-    private E                      id;
-    private String                 name;
-    private T                      attributes;
-    private int                    graphType;
+    private T      id;
+    private String name;
+    private D      data;
+    private int    graphType;
 
     public Vertex(Graph graph) {
         graphType = graph.getType();
@@ -21,11 +19,11 @@ public class Vertex<E, T> {
         return graphType == Graph.UndirectedGraph;
     }
 
-    public E getId() {
+    public T getId() {
         return id;
     }
 
-    public void setId(E id) {
+    public void setId(T id) {
         this.id = id;
     }
 
@@ -37,12 +35,12 @@ public class Vertex<E, T> {
         this.name = name;
     }
 
-    public T getAttributes() {
-        return attributes;
+    public D getData() {
+        return data;
     }
 
-    public void setAttributes(T attributes) {
-        this.attributes = attributes;
+    public void setData(D data) {
+        this.data = data;
     }
 
 

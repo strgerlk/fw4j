@@ -12,7 +12,7 @@ import java.util.UUID;
  */
 public abstract class IdGenerator {
 
-    private static long lastTimestamp = 0L;
+    private static volatile long lastTimestamp = 0L;
 
     private static final SnowFlake SNOW_FLAKE = new SnowFlake(1, 1);
 
@@ -37,16 +37,8 @@ public abstract class IdGenerator {
      * <p>保证唯一加锁，注意高并发效率</p>
      * @return 返回日期毫秒级字符串
      */
-    public static String nextMillis() {
-        long currTimestamp;
-        synchronized (IdGenerator.class) {
-            currTimestamp = System.currentTimeMillis();
-            while (lastTimestamp == currTimestamp) {
-                currTimestamp = System.currentTimeMillis();
-            }
-            lastTimestamp = currTimestamp;
-        }
-        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date(currTimestamp));
+    public static String nextDateTime() {
+        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date(IdGenerator.nextTimestamp()));
     }
 
     /**
@@ -54,8 +46,8 @@ public abstract class IdGenerator {
      * <p>保证唯一加锁，注意高并发效率</p>
      * @return 返回日期毫秒级数字
      */
-    public static long nextMillis2() {
-        return Long.parseLong(nextMillis());
+    public static long nextDateTime2() {
+        return Long.parseLong(nextDateTime());
     }
 
     /**
@@ -65,6 +57,22 @@ public abstract class IdGenerator {
      */
     public static long nextId() {
         return SNOW_FLAKE.nextId();
+    }
+
+    /**
+     * 线程安全获取时间戳
+     * @return timestamp
+     */
+    public static synchronized Long nextTimestamp() {
+        long currTimestamp;
+        synchronized (IdGenerator.class) {
+            currTimestamp = System.currentTimeMillis();
+            while (lastTimestamp == currTimestamp) {
+                currTimestamp = System.currentTimeMillis();
+            }
+            lastTimestamp = currTimestamp;
+        }
+        return currTimestamp;
     }
 
 }

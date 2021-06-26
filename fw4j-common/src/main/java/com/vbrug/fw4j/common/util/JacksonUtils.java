@@ -5,11 +5,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.vbrug.fw4j.common.exception.Fw4jException;
-import com.vbrug.fw4j.common.third.tree.BaseTreeHandler;
+import com.vbrug.fw4j.common.third.tree.BaseTree;
 import com.vbrug.fw4j.common.third.tree.TreeNode;
 
 import java.io.IOException;
@@ -32,9 +32,11 @@ public abstract class JacksonUtils {
 
     static {
         // 转换为格式化的json
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+//        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         // 如果json中有新增的字段并且是实体类类中不存在的，不报错
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        // 转换字段名驼峰格式
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         //修改日期格式
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     }
@@ -45,6 +47,8 @@ public abstract class JacksonUtils {
      * @return 返回序列化后的字符串
      */
     public static String bean2Json(Object object) {
+        if (ObjectUtils.isNull(object))
+            return null;
         StringWriter  sw  = new StringWriter();
         JsonGenerator gen = null;
         try {
@@ -72,7 +76,7 @@ public abstract class JacksonUtils {
         try {
             return mapper.readValue(jsonStr, clazz);
         } catch (IOException e) {
-            throw new Fw4jException(e, "JSON {}转对象出错", jsonStr);
+            throw new Fw4jException(e, "JSON {} 转对象出错", jsonStr);
         }
     }
 
@@ -155,8 +159,8 @@ public abstract class JacksonUtils {
         }
 
         // 构建解析树
-        String[]                                     pathArray   = parsePath.replaceAll("(\\\\+|/+)", "/").split("/");
-        BaseTreeHandler<String, Map<String, String>> treeHandler = buildTree(rootNode, pathArray);
+        String[]                              pathArray   = parsePath.replaceAll("(\\\\+|/+)", "/").replaceAll("^/", "").split("/");
+        BaseTree<String, Map<String, String>> treeHandler = buildTree(rootNode, pathArray);
 
         // 查找叶子节点
         List<TreeNode<String, Map<String, String>>> leafList = new ArrayList<>();
@@ -167,11 +171,11 @@ public abstract class JacksonUtils {
         // 生成结果
         List<Map<String, String>> dataList = new ArrayList<>();
         leafList.forEach(x -> {
-            Map<String, String>                   map            = x.getAttributes();
-            TreeNode<String, Map<String, String>> parentTreeNode = treeHandler.get(x.getParentCode());
+            Map<String, String>                   map            = x.getData();
+            TreeNode<String, Map<String, String>> parentTreeNode = treeHandler.get(x.getParentId());
             while (parentTreeNode != null) {
-                CollectionUtils.copy(parentTreeNode.getAttributes(), map, false);
-                parentTreeNode = treeHandler.get(parentTreeNode.getParentCode());
+                CollectionUtils.copy(parentTreeNode.getData(), map, false);
+                parentTreeNode = treeHandler.get(parentTreeNode.getParentId());
             }
             dataList.add(map);
         });
@@ -186,7 +190,7 @@ public abstract class JacksonUtils {
      * @param pathArray    解析路径
      * @return 返回解析树
      */
-    private static BaseTreeHandler<String, Map<String, String>> buildTree(JsonNode rootJsonNode, String[] pathArray) {
+    private static BaseTree<String, Map<String, String>> buildTree(JsonNode rootJsonNode, String[] pathArray) {
         List<TreeNode<String, Map<String, String>>> treeNodeList = new ArrayList<>();
 
         Queue<JNode> jNodeQueue = new LinkedList<>();
@@ -214,11 +218,11 @@ public abstract class JacksonUtils {
                 }
             }
 
-            treeNode.setAttributes(attributes);
+            treeNode.setData(attributes);
             // 处理节点编号
-            treeNode.setCode(pollJNode.getTreeNodeCode());
+            treeNode.setId(pollJNode.getTreeNodeCode());
             if (ObjectUtils.notNull(pollJNode.getParentTreeNode()))
-                treeNode.setParentCode(pollJNode.getParentTreeNode().getCode());
+                treeNode.setParentId(pollJNode.getParentTreeNode().getId());
 
             // 加入List
             treeNodeList.add(treeNode);
@@ -235,7 +239,7 @@ public abstract class JacksonUtils {
                         JNode    todoJNode    = new JNode();
                         todoJNode.setParentTreeNode(treeNode);
                         todoJNode.setPathLevel(pollJNode.getPathLevel() + 1);
-                        todoJNode.setTreeNodeCode(treeNode.getCode() + "_" + pathArray[pollJNode.getPathLevel()] + "-" + i);
+                        todoJNode.setTreeNodeCode(treeNode.getId() + "_" + pathArray[pollJNode.getPathLevel()] + "-" + i);
                         todoJNode.setJsonNode(loopJsonNode);
                         jNodeQueue.add(todoJNode);
                         i++;
@@ -244,13 +248,13 @@ public abstract class JacksonUtils {
                     JNode todoJNode = new JNode();
                     todoJNode.setParentTreeNode(treeNode);
                     todoJNode.setPathLevel(pollJNode.getPathLevel() + 1);
-                    todoJNode.setTreeNodeCode(treeNode.getCode() + "_" + pathArray[pollJNode.getPathLevel()]);
+                    todoJNode.setTreeNodeCode(treeNode.getId() + "_" + pathArray[pollJNode.getPathLevel()]);
                     todoJNode.setJsonNode(pathJsonNode);
                     jNodeQueue.add(todoJNode);
                 }
             }
         }
-        return new BaseTreeHandler<>(treeNodeList);
+        return new BaseTree<>(treeNodeList);
     }
 
     private static class JNode {

@@ -1,5 +1,6 @@
 package com.vbrug.fw4j.common.third.tree;
 
+
 import com.vbrug.fw4j.common.util.Assert;
 import com.vbrug.fw4j.common.util.ObjectUtils;
 
@@ -11,16 +12,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
- * 树处理工具
- * @param <E>
- * @param <T>
+ * @author vbrug
+ * @since 1.0.0
  */
-public class BaseTreeHandler<E, T> {
+public abstract class AbstractTree<T, D> implements Tree<T, D> {
 
-    protected     TreeNode<E, T>         vRoot     = new TreeNode<>();
-    private final Map<E, TreeNode<E, T>> treeIndex = new HashMap<>();
+    protected     TreeNode<T, D>         vRoot     = new TreeNode<>();
+    private final Map<T, TreeNode<T, D>> treeIndex = new HashMap<>();
 
-    public BaseTreeHandler(List<TreeNode<E, T>> treeNodeList) {
+    public AbstractTree(List<TreeNode<T, D>> treeNodeList) {
         vRoot.setLevel(-1);
         vRoot.setChildren(new ArrayList<>());
         this.init(treeNodeList);
@@ -30,13 +30,13 @@ public class BaseTreeHandler<E, T> {
      * 从节点中构建树
      * @param treeNodeList 树节点
      */
-    public void init(List<TreeNode<E, T>> treeNodeList) {
+    public void init(List<TreeNode<T, D>> treeNodeList) {
         // 增加节点
-        for (TreeNode<E, T> node : treeNodeList) {
+        for (TreeNode<T, D> node : treeNodeList) {
             this.add_(node);
         }
         // 刷新节点Level
-        for (TreeNode<E, T> treeNode : vRoot.getChildren()) {
+        for (TreeNode<T, D> treeNode : vRoot.getChildren()) {
             this.flushLevel(treeNode);
         }
     }
@@ -45,7 +45,7 @@ public class BaseTreeHandler<E, T> {
      * 添加节点，不刷新节点Level
      * @param node 待添加的节点
      */
-    public void add(TreeNode<E, T> node) {
+    public void add(TreeNode<T, D> node) {
         this.add_(node);
         this.flushLevel(node);
     }
@@ -54,29 +54,28 @@ public class BaseTreeHandler<E, T> {
      * 删除节点
      * @param node 待删除的节点
      */
-    public void delete(TreeNode<E, T> node) {
+    public void delete(TreeNode<T, D> node) {
         if (node.getLevel() == 1)
             vRoot.getChildren().remove(node);
         else
-            treeIndex.get(node.getParentCode()).getChildren().remove(node);
+            treeIndex.get(node.getParentId()).getChildren().remove(node);
     }
 
     /**
-     * 根据code查找节点
+     * 根据id查找节点
      */
-    public TreeNode<E, T> get(E code) {
-        return treeIndex.get(code);
+    public TreeNode<T, D> get(T id) {
+        return treeIndex.get(id);
     }
 
 
     /**
      * 刷新树level
-     * @param level 当前节点level
-     * @param node  当前节点
+     * @param node 当前节点
      */
-    private void flushLevel(TreeNode<E, T> node) {
+    private void flushLevel(TreeNode<T, D> node) {
         node.bfs(x -> {
-            TreeNode<E, T> parentNode = treeIndex.get(x.getParentCode());
+            TreeNode<T, D> parentNode = treeIndex.get(x.getParentId());
             if (parentNode == null)
                 node.setLevel(1);
             else
@@ -88,15 +87,15 @@ public class BaseTreeHandler<E, T> {
      * 添加节点，不刷新节点Level
      * @param node 待添加的节点
      */
-    private void add_(TreeNode<E, T> node) {
+    private void add_(TreeNode<T, D> node) {
         /* 01-判断当前节点是否重复 */
-        Assert.isNull(treeIndex.get(node.getCode()), "节点：" + node.getCode() + " 已存在");
-        if (node.getCode().equals(node.getParentCode()))
-            throw new RuntimeException("节点： "+node.getCode()+" 自身编号和父级编号相同");
+        Assert.isNull(treeIndex.get(node.getId()), "节点：" + node.getId() + " 已存在");
+        if (node.getId().equals(node.getParentId()))
+            throw new RuntimeException("节点： " + node.getId() + " 自身编号和父级编号相同");
 
         /* 02-匹配当前一级是否有当前节点的子节点 */
-        List<TreeNode<E, T>> rootChildren = this.vRoot.getChildren();
-        List<TreeNode<E, T>> childList    = rootChildren.stream().filter(x -> node.getCode().equals(x.getParentCode())).collect(Collectors.toList());
+        List<TreeNode<T, D>> rootChildren = this.vRoot.getChildren();
+        List<TreeNode<T, D>> childList    = rootChildren.stream().filter(x -> node.getId().equals(x.getParentId())).collect(Collectors.toList());
         if (!ObjectUtils.isEmpty(childList)) {
             node.setChildren(new ArrayList<>());
             childList.forEach(x -> {
@@ -108,7 +107,7 @@ public class BaseTreeHandler<E, T> {
         /* 03-遍历查找父节点 */
         AtomicBoolean hasParent = new AtomicBoolean(false);
         this.vRoot.bfs(x -> {
-            if (x.getCode().equals(node.getParentCode())) {
+            if (x.getId().equals(node.getParentId())) {
                 if (x.getChildren() == null)
                     x.setChildren(new ArrayList<>());
                 x.getChildren().add(node);
@@ -125,6 +124,6 @@ public class BaseTreeHandler<E, T> {
         }
 
         /* 05-加入索引 */
-        treeIndex.put(node.getCode(), node);
+        treeIndex.put(node.getId(), node);
     }
 }

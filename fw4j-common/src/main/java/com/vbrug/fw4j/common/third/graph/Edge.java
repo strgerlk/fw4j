@@ -5,15 +5,15 @@ package com.vbrug.fw4j.common.third.graph;
  * @author vbrug
  * @since 1.0.0
  */
-public class Edge<E, T> {
+public class Edge<T, D> {
 
     public static final int NORMAL   = 0;
     public static final int MST      = 1;
     public static final int CRITICAL = 2;
     private             int weight;
-    private             E   firstVertexId;
-    private             E   secondVertexId;
-    private             T   attributes;
+    private             T   firstVertexId;
+    private             T   secondVertexId;
+    private             D   data;
     private             int type;
 
 
@@ -25,28 +25,28 @@ public class Edge<E, T> {
         this.weight = weight;
     }
 
-    public E getFirstVertexId() {
+    public T getFirstVertexId() {
         return firstVertexId;
     }
 
-    public void setFirstVertexId(E firstVertexId) {
+    public void setFirstVertexId(T firstVertexId) {
         this.firstVertexId = firstVertexId;
     }
 
-    public E getSecondVertexId() {
+    public T getSecondVertexId() {
         return secondVertexId;
     }
 
-    public void setSecondVertexId(E secondVertexId) {
+    public void setSecondVertexId(T secondVertexId) {
         this.secondVertexId = secondVertexId;
     }
 
-    public T getAttributes() {
-        return attributes;
+    public D getData() {
+        return data;
     }
 
-    public void setAttributes(T attributes) {
-        this.attributes = attributes;
+    public void setData(D data) {
+        this.data = data;
     }
 
     public int getType() {

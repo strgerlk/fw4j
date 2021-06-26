@@ -8,5 +8,8 @@ package com.vbrug.fw4j.common.util;
 public class ArrayUtils {
 
 
+    public static boolean isEmpty(Object[] objects) {
+        return (objects == null || objects.length == 0);
+    }
 
 }

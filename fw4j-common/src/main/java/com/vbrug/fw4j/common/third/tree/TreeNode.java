@@ -11,33 +11,33 @@ import java.util.function.Function;
 /**
  * 树节点
  */
-public class TreeNode<E, T> implements Cloneable {
-    private E                    code;
-    private E                    parentCode;
+public class TreeNode<T, D> implements Cloneable {
+    private T                    id;
+    private T                    parentId;
     private String               name;
-    private List<TreeNode<E, T>> children;
+    private List<TreeNode<T, D>> children;
     private int                  level = 0;
-    private T                    attributes;
+    private D                    data;
     private boolean              isLeaf;
 
     public boolean isLeaf() {
         return children == null || children.isEmpty();
     }
 
-    public E getCode() {
-        return code;
+    public T getId() {
+        return id;
     }
 
-    public void setCode(E code) {
-        this.code = code;
+    public void setId(T id) {
+        this.id = id;
     }
 
-    public E getParentCode() {
-        return parentCode;
+    public T getParentId() {
+        return parentId;
     }
 
-    public void setParentCode(E parentCode) {
-        this.parentCode = parentCode;
+    public void setParentId(T parentId) {
+        this.parentId = parentId;
     }
 
     public String getName() {
@@ -48,11 +48,11 @@ public class TreeNode<E, T> implements Cloneable {
         this.name = name;
     }
 
-    public List<TreeNode<E, T>> getChildren() {
+    public List<TreeNode<T, D>> getChildren() {
         return children;
     }
 
-    public void setChildren(List<TreeNode<E, T>> children) {
+    public void setChildren(List<TreeNode<T, D>> children) {
         this.children = children;
     }
 
@@ -64,27 +64,27 @@ public class TreeNode<E, T> implements Cloneable {
         this.level = level;
     }
 
-    public T getAttributes() {
-        return attributes;
+    public D getData() {
+        return data;
     }
 
-    public void setAttributes(T attributes) {
-        this.attributes = attributes;
+    public void setData(D data) {
+        this.data = data;
     }
 
     /**
      * 浅克隆，克隆基本信息，不克隆引用对象
      * @return 克隆实例
      */
-    public TreeNode<E, T> clone() {
-        TreeNode<E, T> clone = null;
+    public TreeNode<T, D> clone() {
+        TreeNode<T, D> clone = null;
         try {
-            clone = (TreeNode<E, T>) super.clone();
+            clone = (TreeNode<T, D>) super.clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
         Objects.requireNonNull(clone).setChildren(null);
-        clone.setAttributes(this.getAttributes());
+        clone.setData(this.getData());
         return clone;
     }
 
@@ -92,10 +92,10 @@ public class TreeNode<E, T> implements Cloneable {
      * 深度克隆
      * @return 深克隆实例
      */
-    public TreeNode<E, T> deepClone() {
-        TreeNode<E, T> clone = this.clone();
+    public TreeNode<T, D> deepClone() {
+        TreeNode<T, D> clone = this.clone();
         if (!ObjectUtils.isEmpty(this.getChildren())) {
-            List<TreeNode<E, T>> children = new ArrayList<>();
+            List<TreeNode<T, D>> children = new ArrayList<>();
             this.getChildren().forEach(x -> {
                 children.add(x.deepClone());
             });
@@ -109,7 +109,7 @@ public class TreeNode<E, T> implements Cloneable {
      * 广度遍历
      * @param consumer 消费方式
      */
-    public void bfs(Consumer<TreeNode<E, T>> consumer) {
+    public void bfs(Consumer<TreeNode<T, D>> consumer) {
         TreeUtils.bfs(this, consumer);
     }
 
@@ -117,7 +117,7 @@ public class TreeNode<E, T> implements Cloneable {
      * 广度遍历
      * @param consumer 消费方式
      */
-    public void bfs(Function<TreeNode<E, T>, Boolean> function) {
+    public void bfs(Function<TreeNode<T, D>, Boolean> function) {
         TreeUtils.bfs(this, function);
     }
 }

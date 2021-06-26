@@ -2,48 +2,38 @@ package com.vbrug.fw4j.common.third.graph;
 
 import com.vbrug.fw4j.common.util.CollectionUtils;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
  * @author vbrug
  * @since 1.0.0
  */
-public class UndirectedGraph<E, T, V> extends AbstractGraph<E, T, V> {
+public class UndirectedGraph<T, V, E> extends AbstractGraph<T, V, E> {
+
 
     @Override
-    public void insert(Edge<E, V> edge) {
-        // 处理边
-        if (CollectionUtils.isEmpty(edgeIndex.get(edge.getFirstVertexId())))
-            edgeIndex.put(edge.getFirstVertexId(), new HashMap<>());
-        edgeIndex.get(edge.getFirstVertexId()).put(edge.getSecondVertexId(), edge);
-        if (CollectionUtils.isEmpty(edgeIndex.get(edge.getSecondVertexId())))
-            edgeIndex.put(edge.getSecondVertexId(), new HashMap<>());
-        edgeIndex.get(edge.getSecondVertexId()).put(edge.getFirstVertexId(), edge);
-    }
+    public void remove(Edge<T, E> edge) {
+        // 处理正向边
+        Map<T, Edge<T, E>> forwardEdgeMap = forwardEdgeIndex.get(edge.getFirstVertexId());
+        forwardEdgeMap.remove(edge.getSecondVertexId());
+        if (CollectionUtils.isEmpty(forwardEdgeMap))
+            forwardEdgeIndex.remove(forwardEdgeMap);
 
-    @Override
-    public void remove(Edge<E, V> edge) {
-        // 处理边
-        Map<E, Edge<E, V>> firstEdgeMap = edgeIndex.get(edge.getFirstVertexId());
-        firstEdgeMap.remove(edge.getSecondVertexId());
-        if (CollectionUtils.isEmpty(firstEdgeMap))
-            edgeIndex.remove(firstEdgeMap);
-        Map<E, Edge<E, V>> secondEdgeMap = edgeIndex.get(edge.getSecondVertexId());
-        firstEdgeMap.remove(edge.getFirstVertexId());
-        if (CollectionUtils.isEmpty(secondEdgeMap))
-            edgeIndex.remove(secondEdgeMap);
+        // 处理逆向边
+        Map<T, Edge<T, E>> reverseEdgeMap = reverseEdgeIndex.get(edge.getSecondVertexId());
+        reverseEdgeMap.remove(edge.getFirstVertexId());
+        if (CollectionUtils.isEmpty(reverseEdgeMap))
+            reverseEdgeIndex.remove(reverseEdgeMap);
     }
 
     @Override
     public int getEdgeNum() {
-        return (int) edgeIndex.keySet().stream().flatMap(x -> edgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).distinct().count();
+        return (int) forwardEdgeIndex.keySet().stream().flatMap(x -> forwardEdgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).distinct().count();
     }
 
     @Override
-    public Iterator<Edge<E, V>> getEdge() {
-        return edgeIndex.keySet().stream().flatMap(x -> edgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).distinct().iterator();
+    public Iterator<Edge<T, E>> getEdge() {
+        return forwardEdgeIndex.keySet().stream().flatMap(x -> forwardEdgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).distinct().iterator();
     }
 }

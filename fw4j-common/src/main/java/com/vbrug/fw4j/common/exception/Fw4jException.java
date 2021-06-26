@@ -21,10 +21,10 @@ public class Fw4jException extends RuntimeException {
     }
 
     public Fw4jException(String message, Object... args) {
-        super(StringUtils.replaceZW(message, "{}", args));
+        super(StringUtils.replacePlaceholder(message, "{}", args));
     }
 
     public Fw4jException(Throwable cause, String message, Object... args) {
-        super(StringUtils.replaceZW(message, "{}", args), cause);
+        super(StringUtils.replacePlaceholder(message, "{}", args), cause);
     }
 }

@@ -6,7 +6,7 @@ import java.util.Iterator;
  * @author vbrug
  * @since 1.0.0
  */
-public interface Graph<E, T, V> {
+public interface Graph<T, V, E> {
     /*
      * 无向图
      */
@@ -28,25 +28,25 @@ public interface Graph<E, T, V> {
      * 插入顶点
      * @param vertex 待插入的顶点
      */
-    void insert(Vertex<E, T> vertex);
+    void insert(Vertex<T, V> vertex);
 
     /**
      * 插入边
      * @param edge 待插入的边
      */
-    void insert(Edge<E, V> edge);
+    void insert(Edge<T, E> edge);
 
     /**
      * 删除顶点
      * @param vertex 待删除顶点
      */
-    void remove(Vertex<E, T> vertex);
+    void remove(Vertex<T, V> vertex);
 
     /**
      * 删除边
      * @param edge 待删除边
      */
-    void remove(Edge<E, V> edge);
+    void remove(Edge<T, E> edge);
 
     /**
      * 获取顶点数量
@@ -64,33 +64,33 @@ public interface Graph<E, T, V> {
      * 获取所有顶点
      * @return 顶点
      */
-    Iterator<Vertex<E, T>> getVertex();
+    Iterator<Vertex<T, V>> getVertex();
 
     /**
      * 获取所有边
      * @return 边
      */
-    Iterator<Edge<E, V>> getEdge();
+    Iterator<Edge<T, E>> getEdge();
 
     /**
      * 获取顶点的邻接点
      * @return 邻接点
      */
-    Iterator<Vertex<E, T>> adjacentVertex(Vertex<E, T> vertex);
+    Iterator<Vertex<T, V>> adjacentVertex(Vertex<T, V> vertex);
 
     /**
      * 深度遍历
      * @param vertex 遍历起点
      * @return 迭代器
      */
-    Iterator<Vertex<E, T>> dfs(Vertex<E, T> vertex);
+    Iterator<Vertex<T, V>> dfs(Vertex<T, V> vertex);
 
     /**
      * 广度遍历
      * @param vertex 遍历起点
      * @return 迭代器
      */
-    Iterator<Vertex<E, T>> bfs(Vertex<E, T> vertex);
+    Iterator<Vertex<T, V>> bfs(Vertex<T, V> vertex);
 
     /**
      * 获取最短路径
@@ -98,7 +98,7 @@ public interface Graph<E, T, V> {
      * @return 迭代器
      * @throws UnsupportedOperationException 异常
      */
-    Iterator<Vertex<E, T>> shortestPath(Vertex<E, T> vertex) throws UnsupportedOperationException;
+    Iterator<Vertex<T, V>> shortestPath(Vertex<T, V> vertex) throws UnsupportedOperationException;
 
     /**
      * 获取关键路径

@@ -2,38 +2,40 @@ package com.vbrug.fw4j.common.third.graph;
 
 import com.vbrug.fw4j.common.util.CollectionUtils;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author vbrug
  * @since 1.0.0
  */
-public class DirectGraph<E, T, V> extends AbstractGraph<E, T, V> {
+public class DirectGraph<T, V, E> extends AbstractGraph<T, V, E> {
 
     @Override
-    public void insert(Edge<E, V> edge) {
-        if (CollectionUtils.isEmpty(edgeIndex.get(edge.getFirstVertexId())))
-            edgeIndex.put(edge.getFirstVertexId(), new HashMap<>());
-        edgeIndex.get(edge.getFirstVertexId()).put(edge.getSecondVertexId(), edge);
-    }
-
-    @Override
-    public void remove(Edge<E, V> edge) {
-        Map<E, Edge<E, V>> eEdgeMap = edgeIndex.get(edge.getFirstVertexId());
+    public void remove(Edge<T, E> edge) {
+        Map<T, Edge<T, E>> eEdgeMap = forwardEdgeIndex.get(edge.getFirstVertexId());
         eEdgeMap.remove(edge.getSecondVertexId());
         if (CollectionUtils.isEmpty(eEdgeMap))
-            edgeIndex.remove(eEdgeMap);
+            forwardEdgeIndex.remove(eEdgeMap);
+
     }
 
     @Override
     public int getEdgeNum() {
-        return (int) edgeIndex.keySet().stream().flatMap(x -> edgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).count();
+        long forwardCount = forwardEdgeIndex.keySet().stream().flatMap(x -> forwardEdgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).count();
+        long reverseCount = reverseEdgeIndex.keySet().stream().flatMap(x -> reverseEdgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).count();
+        return (int) (forwardCount + reverseCount);
     }
 
     @Override
-    public Iterator<Edge<E, V>> getEdge() {
-        return edgeIndex.keySet().stream().flatMap(x -> edgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).iterator();
+    public Iterator<Edge<T, E>> getEdge() {
+        Collection<Edge<T, E>> forwardCollect = forwardEdgeIndex.keySet().stream()
+                .flatMap(x -> forwardEdgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).collect(Collectors.toList());
+        Collection<Edge<T, E>> reverseCollect = reverseEdgeIndex.keySet().stream()
+                .flatMap(x -> reverseEdgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).collect(Collectors.toList());
+        forwardCollect.addAll(reverseCollect);
+        return forwardCollect.iterator();
     }
 }

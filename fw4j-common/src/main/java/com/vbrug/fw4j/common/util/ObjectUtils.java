@@ -1,8 +1,12 @@
 package com.vbrug.fw4j.common.util;
 
+import com.vbrug.fw4j.common.exception.Fw4jException;
+
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -187,6 +191,7 @@ public abstract class ObjectUtils {
 
     /**
      * 克隆bean
+     * [注] 必须含有无参构造函数
      */
     public static <T> T clone(T obj) throws Exception {
         Assert.notNull(obj, "Obj must not be null");

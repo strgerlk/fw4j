@@ -7,6 +7,6 @@ package com.vbrug.fw4j.common.util;
 public class IDUtilTest {
 
     public static void main(String[] args) {
-        System.out.println(IdGenerator.nextMillis());
+        System.out.println(IdGenerator.nextDateTime());
     }
 }

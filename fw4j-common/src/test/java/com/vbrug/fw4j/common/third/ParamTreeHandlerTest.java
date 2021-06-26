@@ -1,6 +1,7 @@
 package com.vbrug.fw4j.common.third;
 
-import com.vbrug.fw4j.common.third.tree.ParamTreeHandler;
+import com.vbrug.fw4j.common.third.tree.ParamTree;
+import com.vbrug.fw4j.common.third.tree.TreeBuilder;
 import com.vbrug.fw4j.common.third.tree.TreeNode;
 import com.vbrug.fw4j.common.util.FileUtil;
 
@@ -16,7 +17,13 @@ import java.util.Map;
 public class ParamTreeHandlerTest {
 
     public static void main(String[] args) throws Exception {
-        String filePath = "/home/vbrug/TMP/hd_xqdw.tsv";
+        String filePath = "/home/vbrug/wj_xq.tsv";
+
+        ParamTree<String, Map<String, Object>> paramTree = new TreeBuilder<String, Map<String, Object>>()
+                .setTreeNode(readFromFile(filePath)).build(ParamTree.class);
+        System.out.println(paramTree.ckClear());
+
+
         fullCodeClear(filePath);
         ckParamClear(filePath);
     }
@@ -24,8 +31,8 @@ public class ParamTreeHandlerTest {
 
     private static void ckParamClear(String filePath) throws Exception {
         // 处理ck码表
-        ParamTreeHandler<String, Map<String, Object>> paramTreeHandler = new ParamTreeHandler<>(readFromFile(filePath));
-        List<Map<String, Object>>                     maps             = paramTreeHandler.ckClear();
+        ParamTree<String, Map<String, Object>> paramTree = new ParamTree<>(readFromFile(filePath));
+        List<Map<String, Object>>              maps      = paramTree.ckClear();
 
         // 生成结果文件
         List<String> rsLineList = new ArrayList<>();
@@ -50,8 +57,8 @@ public class ParamTreeHandlerTest {
 
     private static void fullCodeClear(String filePath) throws Exception {
         // 处理全编号
-        ParamTreeHandler<String, Map<String, Object>> paramTreeHandler = new ParamTreeHandler<>(readFromFile(filePath));
-        List<Map<String, Object>>                     maps             = paramTreeHandler.fullCodeClear();
+        ParamTree<String, Map<String, Object>> paramTree = new ParamTree<>(readFromFile(filePath));
+        List<Map<String, Object>>              maps      = paramTree.fullCodeClear();
 
         // 生成结果文件
         List<String> rsLineList = new ArrayList<>();
@@ -80,9 +87,9 @@ public class ParamTreeHandlerTest {
             String[] splits = s.split("\t");
             // 转换TreeNode
             TreeNode<String, Map<String, Object>> node = new TreeNode<>();
-            node.setCode(splits[0].trim());
+            node.setId(splits[0].trim());
             node.setName(splits[1].trim());
-            node.setParentCode(splits[2].trim());
+            node.setParentId(splits[2].trim());
             treeNodeList.add(node);
         }
         return treeNodeList;

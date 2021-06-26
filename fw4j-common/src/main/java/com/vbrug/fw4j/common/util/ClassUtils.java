@@ -1,8 +1,11 @@
 package com.vbrug.fw4j.common.util;
 
+import com.vbrug.fw4j.common.exception.Fw4jException;
+
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Constructor;
 
 /**
  * Class工具类
@@ -42,5 +45,34 @@ public class ClassUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    /**
+     * 根据参数构建对象
+     * @param tClass
+     * @param args
+     * @param <T>
+     * @return 结果类
+     */
+    public static <T> T newInstance(Class<T> tClass, Object... args) throws Exception {
+        Constructor[] declaredConstructors = tClass.getDeclaredConstructors();
+        Constructor   constructor          = null;
+        outLoop:
+        for (Constructor loopConstructor : declaredConstructors) {
+            Class[] parameterTypes = loopConstructor.getParameterTypes();
+            if (parameterTypes.length == args.length) {
+                for (int j = 0; j < args.length; j++) {
+                    if (!parameterTypes[j].isInstance(args[j])) {
+                        continue outLoop;
+                    }
+                }
+                constructor = loopConstructor;
+                break outLoop;
+            }
+        }
+        if (ObjectUtils.isNull(constructor))
+            throw new Fw4jException("对象 {} 不存在参数为({})的构造函数", tClass, args);
+        return (T) constructor.newInstance(args);
     }
 }

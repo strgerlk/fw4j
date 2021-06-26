@@ -132,23 +132,51 @@ public class StringUtils {
     }
 
     /**
-     * @param src
-     * @param zw
-     * @param args
-     * @return
+     * 替换占位符，默认占位符为 “{}”
+     * @param src  源数据
+     * @param args 参数
+     * @return 结果
      */
-    public static String replaceZW(String src, String zw, Object... args) {
+    public static String replacePlaceholder(String src, Object... args) {
+        return replacePlaceholder(src, "{}", args);
+    }
+
+    /**
+     * 替换占位符
+     * @param src         源数据
+     * @param placeholder 占位符号
+     * @param args        参数
+     * @return 结果
+     */
+    public static String replacePlaceholder(String src, String placeholder, Object... args) {
+        placeholder = StringUtils.escapeExprSpecialWord(placeholder);
         for (Object arg : args) {
             String value;
             if (arg instanceof String)
                 value = String.valueOf(arg);
             else
                 value = JacksonUtils.bean2Json(arg);
-            src = src.replaceFirst(zw, value);
+            src = src.replaceFirst(placeholder, value);
         }
         return src;
     }
 
+    /**
+     * 转义正则特殊字符 （$()*+.[]?\^{},|）
+     * @param keyword 关键词
+     * @return 结果
+     */
+    public static String escapeExprSpecialWord(String keyword) {
+        if (!StringUtils.isEmpty(keyword)) {
+            String[] fbsArr = {"\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|"};
+            for (String key : fbsArr) {
+                if (keyword.contains(key)) {
+                    keyword = keyword.replace(key, "\\" + key);
+                }
+            }
+        }
+        return keyword;
+    }
 
     /**
      * 字符串提取

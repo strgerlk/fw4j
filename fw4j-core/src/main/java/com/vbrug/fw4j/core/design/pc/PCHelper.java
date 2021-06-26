@@ -122,6 +122,7 @@ public class PCHelper {
         String value = "说得好阜康市'sdflsfjs\\'";
         System.out.println(value.replaceAll("\\\\", "\\\\\\\\"));
         System.out.println(Integer.MIN_VALUE);
+        System.out.println(Runtime.getRuntime().availableProcessors());
     }
 
 }
