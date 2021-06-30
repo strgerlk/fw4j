@@ -22,12 +22,12 @@ public abstract class AbstractGraph<T, V, E> implements Graph<T, V, E> {
     }
 
     @Override
-    public void insert(Vertex<T, V> vertex) {
+    public void add(Vertex<T, V> vertex) {
         vertexIndex.put(vertex.getId(), vertex);
     }
 
     @Override
-    public void insert(Edge<T, E> edge) {
+    public void add(Edge<T, E> edge) {
         if (CollectionUtils.isEmpty(forwardEdgeIndex.get(edge.getFirstVertexId())))
             forwardEdgeIndex.put(edge.getFirstVertexId(), new HashMap<>());
         forwardEdgeIndex.get(edge.getFirstVertexId()).put(edge.getSecondVertexId(), edge);
@@ -39,7 +39,7 @@ public abstract class AbstractGraph<T, V, E> implements Graph<T, V, E> {
 
 
     @Override
-    public void remove(Vertex<T, V> vertex) {
+    public void delete(Vertex<T, V> vertex) {
         vertexIndex.remove(vertex.getId());
         Map<T, Edge<T, E>> removeEdgeMap = forwardEdgeIndex.get(vertex.getId());
         for (T next : removeEdgeMap.keySet()) {
@@ -54,8 +54,13 @@ public abstract class AbstractGraph<T, V, E> implements Graph<T, V, E> {
     }
 
     @Override
-    public Iterator<Vertex<T, V>> getVertex() {
+    public Iterator<Vertex<T, V>> getVertexes() {
         return vertexIndex.values().iterator();
+    }
+
+    @Override
+    public Vertex<T, V> getVertex(T id) {
+        return vertexIndex.get(id);
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class DirectGraph<T, V, E> extends AbstractGraph<T, V, E> {
 
     @Override
-    public void remove(Edge<T, E> edge) {
+    public void delete(Edge<T, E> edge) {
         Map<T, Edge<T, E>> eEdgeMap = forwardEdgeIndex.get(edge.getFirstVertexId());
         eEdgeMap.remove(edge.getSecondVertexId());
         if (CollectionUtils.isEmpty(eEdgeMap))
@@ -30,7 +30,7 @@ public class DirectGraph<T, V, E> extends AbstractGraph<T, V, E> {
     }
 
     @Override
-    public Iterator<Edge<T, E>> getEdge() {
+    public Iterator<Edge<T, E>> getEdges() {
         Collection<Edge<T, E>> forwardCollect = forwardEdgeIndex.keySet().stream()
                 .flatMap(x -> forwardEdgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).collect(Collectors.toList());
         Collection<Edge<T, E>> reverseCollect = reverseEdgeIndex.keySet().stream()

@@ -11,6 +11,8 @@ public class Vertex<T, D> {
     private D      data;
     private int    graphType;
 
+    public Vertex() {}
+
     public Vertex(Graph graph) {
         graphType = graph.getType();
     }

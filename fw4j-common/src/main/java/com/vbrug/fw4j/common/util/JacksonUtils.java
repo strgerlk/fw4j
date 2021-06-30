@@ -73,6 +73,8 @@ public abstract class JacksonUtils {
      * @return 解析后的结果
      */
     public static <T> T json2Bean(String jsonStr, Class<T> clazz) {
+        if (!StringUtils.hasText(jsonStr))
+            return null;
         try {
             return mapper.readValue(jsonStr, clazz);
         } catch (IOException e) {
@@ -86,6 +88,8 @@ public abstract class JacksonUtils {
      * @return JsonNode
      */
     public static JsonNode json2Node(String jsonStr) {
+        if (!StringUtils.hasText(jsonStr))
+            return null;
         try {
             return mapper.readTree(jsonStr);
         } catch (IOException e) {
@@ -116,6 +120,8 @@ public abstract class JacksonUtils {
      * @return 解析后的结果
      */
     public static <T> List<T> jsonToList(String jsonStr, Class<T> clazz) {
+        if (!StringUtils.hasText(jsonStr))
+            return null;
         CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, clazz);
         try {
             return mapper.readValue(jsonStr, collectionType);
@@ -132,6 +138,8 @@ public abstract class JacksonUtils {
      * @return 解析后的结果
      */
     public static <K, V> List<Map<K, V>> jsonToListMap(String jsonStr, Class<K> keyClass, Class<V> valueClass) {
+        if (!StringUtils.hasText(jsonStr))
+            return null;
         MapType        mapType        = mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass);
         CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, mapType);
         try {

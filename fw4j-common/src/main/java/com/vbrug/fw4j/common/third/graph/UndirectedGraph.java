@@ -13,7 +13,7 @@ public class UndirectedGraph<T, V, E> extends AbstractGraph<T, V, E> {
 
 
     @Override
-    public void remove(Edge<T, E> edge) {
+    public void delete(Edge<T, E> edge) {
         // 处理正向边
         Map<T, Edge<T, E>> forwardEdgeMap = forwardEdgeIndex.get(edge.getFirstVertexId());
         forwardEdgeMap.remove(edge.getSecondVertexId());
@@ -33,7 +33,7 @@ public class UndirectedGraph<T, V, E> extends AbstractGraph<T, V, E> {
     }
 
     @Override
-    public Iterator<Edge<T, E>> getEdge() {
+    public Iterator<Edge<T, E>> getEdges() {
         return forwardEdgeIndex.keySet().stream().flatMap(x -> forwardEdgeIndex.get(x).entrySet().stream()).map(Map.Entry::getValue).distinct().iterator();
     }
 }

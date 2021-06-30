@@ -28,25 +28,25 @@ public interface Graph<T, V, E> {
      * 插入顶点
      * @param vertex 待插入的顶点
      */
-    void insert(Vertex<T, V> vertex);
+    void add(Vertex<T, V> vertex);
 
     /**
      * 插入边
      * @param edge 待插入的边
      */
-    void insert(Edge<T, E> edge);
+    void add(Edge<T, E> edge);
 
     /**
      * 删除顶点
      * @param vertex 待删除顶点
      */
-    void remove(Vertex<T, V> vertex);
+    void delete(Vertex<T, V> vertex);
 
     /**
      * 删除边
      * @param edge 待删除边
      */
-    void remove(Edge<T, E> edge);
+    void delete(Edge<T, E> edge);
 
     /**
      * 获取顶点数量
@@ -64,13 +64,19 @@ public interface Graph<T, V, E> {
      * 获取所有顶点
      * @return 顶点
      */
-    Iterator<Vertex<T, V>> getVertex();
+    Iterator<Vertex<T, V>> getVertexes();
+
+    /**
+     * 根据ID获取顶点
+     * @return 顶点
+     */
+    Vertex<T, V> getVertex(T id);
 
     /**
      * 获取所有边
      * @return 边
      */
-    Iterator<Edge<T, E>> getEdge();
+    Iterator<Edge<T, E>> getEdges();
 
     /**
      * 获取顶点的邻接点
