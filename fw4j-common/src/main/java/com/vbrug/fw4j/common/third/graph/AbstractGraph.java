@@ -5,6 +5,7 @@ import com.vbrug.fw4j.common.util.CollectionUtils;
 import java.util.*;
 
 /**
+ * 抽象图
  * @author vbrug
  * @since 1.0.0
  */

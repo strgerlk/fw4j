@@ -47,8 +47,7 @@ public abstract class JacksonUtils {
      * @return 返回序列化后的字符串
      */
     public static String bean2Json(Object object) {
-        if (ObjectUtils.isNull(object))
-            return null;
+        Assert.state(!ObjectUtils.isNull(object), "object参数不可为空");
         StringWriter  sw  = new StringWriter();
         JsonGenerator gen = null;
         try {
@@ -73,8 +72,7 @@ public abstract class JacksonUtils {
      * @return 解析后的结果
      */
     public static <T> T json2Bean(String jsonStr, Class<T> clazz) {
-        if (!StringUtils.hasText(jsonStr))
-            return null;
+        Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串不可为空");
         try {
             return mapper.readValue(jsonStr, clazz);
         } catch (IOException e) {
@@ -88,8 +86,7 @@ public abstract class JacksonUtils {
      * @return JsonNode
      */
     public static JsonNode json2Node(String jsonStr) {
-        if (!StringUtils.hasText(jsonStr))
-            return null;
+        Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串不可为空");
         try {
             return mapper.readTree(jsonStr);
         } catch (IOException e) {
@@ -105,6 +102,7 @@ public abstract class JacksonUtils {
      * @return 解析后的结果
      */
     public static <K, V> Map<K, V> json2Map(String jsonStr, Class<K> keyClass, Class<V> valueClass) {
+        Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串不可为空");
         MapType mapType = mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass);
         try {
             return mapper.readValue(jsonStr, mapType);
@@ -120,8 +118,7 @@ public abstract class JacksonUtils {
      * @return 解析后的结果
      */
     public static <T> List<T> jsonToList(String jsonStr, Class<T> clazz) {
-        if (!StringUtils.hasText(jsonStr))
-            return null;
+        Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串不可为空");
         CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, clazz);
         try {
             return mapper.readValue(jsonStr, collectionType);
@@ -138,8 +135,7 @@ public abstract class JacksonUtils {
      * @return 解析后的结果
      */
     public static <K, V> List<Map<K, V>> jsonToListMap(String jsonStr, Class<K> keyClass, Class<V> valueClass) {
-        if (!StringUtils.hasText(jsonStr))
-            return null;
+        Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串不可为空");
         MapType        mapType        = mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass);
         CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, mapType);
         try {
@@ -157,7 +153,7 @@ public abstract class JacksonUtils {
      */
     public static List<Map<String, String>> json2TileList(String jsonStr, String parsePath) {
 
-        Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串为空");
+        Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串不可为空");
         Assert.state(!StringUtils.isEmpty(parsePath), "parsePath为空");
 
         // 解析json字符串

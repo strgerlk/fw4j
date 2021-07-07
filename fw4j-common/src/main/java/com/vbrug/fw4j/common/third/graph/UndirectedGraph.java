@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * 无向图
  * @author vbrug
  * @since 1.0.0
  */

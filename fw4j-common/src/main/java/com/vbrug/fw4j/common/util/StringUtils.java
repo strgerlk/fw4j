@@ -95,11 +95,21 @@ public class StringUtils {
         return str.replaceAll("[\\t\\n\\r]", " ");
     }
 
+
+    /**
+     * 去除空白符
+     * @param str 源字符串
+     * @return 结果
+     */
+    public static String trimAllWhitespace(String str) {
+        return str.replaceAll("\\s", "");
+    }
+
     /**
      * 删除前后字符
-     * @param content
-     * @param trimStr
-     * @return
+     * @param content 文本
+     * @param trimStr 待去除的字符串
+     * @return 结果
      */
     public static String trimStr(String content, String trimStr) {
         if (content.startsWith(trimStr))
