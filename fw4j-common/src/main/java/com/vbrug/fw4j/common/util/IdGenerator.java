@@ -1,7 +1,7 @@
 package com.vbrug.fw4j.common.util;
 
 
-import com.vbrug.fw4j.common.algorithms.SnowFlake;
+import com.vbrug.fw4j.core.algorithms.SnowFlake;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

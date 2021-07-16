@@ -8,9 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapType;
+import com.vbrug.fw4j.common.ValueMap;
 import com.vbrug.fw4j.common.exception.Fw4jException;
-import com.vbrug.fw4j.common.third.tree.BaseTree;
-import com.vbrug.fw4j.common.third.tree.TreeNode;
+import com.vbrug.fw4j.core.datastruct.tree.BaseTree;
+import com.vbrug.fw4j.core.datastruct.tree.TreeNode;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -104,6 +105,23 @@ public abstract class JacksonUtils {
     public static <K, V> Map<K, V> json2Map(String jsonStr, Class<K> keyClass, Class<V> valueClass) {
         Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串不可为空");
         MapType mapType = mapper.getTypeFactory().constructMapType(Map.class, keyClass, valueClass);
+        try {
+            return mapper.readValue(jsonStr, mapType);
+        } catch (IOException e) {
+            throw new Fw4jException(e, "JSON {}转Map对象出错", jsonStr);
+        }
+    }
+
+    /**
+     * 将json解析为Map对象
+     * @param jsonStr 待解析字符串
+     * @param <K>     keyClass  Map泛型class参数一
+     * @param <V>     valueClass  Map泛型class参数二
+     * @return 解析后的结果
+     */
+    public static <K, V> ValueMap<K, V> json2ValueMap(String jsonStr, Class<K> keyClass, Class<V> valueClass) {
+        Assert.state(!StringUtils.isEmpty(jsonStr), "json解析字符串不可为空");
+        MapType mapType = mapper.getTypeFactory().constructMapType(ValueMap.class, keyClass, valueClass);
         try {
             return mapper.readValue(jsonStr, mapType);
         } catch (IOException e) {

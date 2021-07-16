@@ -55,6 +55,7 @@ public class ClassUtils {
      * @param <T>
      * @return 结果类
      */
+    @SuppressWarnings("rawtypes")
     public static <T> T newInstance(Class<T> tClass, Object... args) throws Exception {
         Constructor[] declaredConstructors = tClass.getDeclaredConstructors();
         Constructor   constructor          = null;

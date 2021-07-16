@@ -37,7 +37,6 @@
     </repositories>
     
     <modules>
-        <module>fw4j-core</module>
         <module>fw4j-common</module>
         <module>fw4j-web</module>
         <module>fw4j-test</module>

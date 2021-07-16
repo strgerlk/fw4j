@@ -1,5 +1,7 @@
 package com.vbrug.fw4j.common.util;
 
+import com.vbrug.fw4j.common.ValueMap;
+
 import java.util.*;
 
 /**
@@ -19,6 +21,10 @@ public abstract class CollectionUtils {
         return (collection == null || collection.isEmpty());
     }
 
+    public static boolean isNotEmpty(Collection<?> collection) {
+        return !isEmpty(collection);
+    }
+
     /**
      * Return {@code true} if the supplied Map is {@code null} or empty.
      * Otherwise, return {@code false}.
@@ -27,6 +33,10 @@ public abstract class CollectionUtils {
      */
     public static boolean isEmpty(Map<?, ?> map) {
         return (map == null || map.isEmpty());
+    }
+
+    public static boolean isNotEmpty(Map<?, ?> map) {
+        return !isEmpty(map);
     }
 
     /**
@@ -353,6 +363,7 @@ public abstract class CollectionUtils {
         return cloneMap;
     }
 
+
     /**
      * 将源集合对象传递到目标集合对象
      * @param sourceMap 源集合对象
@@ -371,4 +382,19 @@ public abstract class CollectionUtils {
                 targetMap.put(entry.getKey(), entry.getValue());
         }
     }
+
+    /**
+     * 将Map中的key由下划线转换为驼峰模式
+     * @param map 集合
+     * @return 结果
+     */
+    public static <V> Map<String, V> keyLineToHump(Map<String, V> map) {
+        Map<String, V>            newMap   = new HashMap<>();
+        Set<Map.Entry<String, V>> entrySet = map.entrySet();
+        for (Map.Entry<String, V> entry : entrySet) {
+            newMap.put(StringUtils.lineToHump(entry.getKey()), entry.getValue());
+        }
+        return newMap;
+    }
+
 }

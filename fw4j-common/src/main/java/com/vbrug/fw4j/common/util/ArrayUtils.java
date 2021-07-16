@@ -12,4 +12,7 @@ public class ArrayUtils {
         return (objects == null || objects.length == 0);
     }
 
+    public static boolean isNotEmpty(Object[] objects) {
+        return !isEmpty(objects);
+    }
 }

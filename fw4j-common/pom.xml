@@ -65,6 +65,19 @@
             <artifactId>poi-ooxml-schemas</artifactId>
             <version>4.0.1</version>
         </dependency>
+    
+        <!-- mybatis -->
+        <dependency>
+           <groupId>org.mybatis</groupId>
+           <artifactId>mybatis</artifactId>
+        </dependency>
+    
+    
+        <!-- spring -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
     </dependencies>
     
     <build>
